@@ -1,2147 +1,519 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fornece — Plataforma B2B de Ferramentas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --navy: #0A1628;
-            --navy-mid: #0F1E35;
-            --navy-card: #152540;
-            --navy-light: #1C3256;
-            --accent: #2ECC8A;
-            --accent-dim: rgba(46, 204, 138, .12);
-            --accent-glow: rgba(46, 204, 138, .22);
-            --white: #EDF2F7;
-            --white-dim: #7A93B0;
-            --white-faint: #3A526B;
-            --red: #E05252;
-            --line: rgba(255, 255, 255, .06);
-            --line-mid: rgba(255, 255, 255, .10);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fornece — Plataforma B2B de Ferramentas</title>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0A1628;--navy-mid:#0F1E35;--navy-card:#152540;
+  --accent:#2ECC8A;--accent-dim:rgba(46,204,138,.12);
+  --white:#EDF2F7;--white-dim:#7A93B0;--white-faint:#3A526B;
+  --red:#E05252;--line:rgba(255,255,255,.06);--line-mid:rgba(255,255,255,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--white);font-family:'Alexandria',sans-serif;overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;
+justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(–line);
+backdrop-filter:blur(20px);background:rgba(10,22,40,.92)}
+.nav-logo{font-size:20px;font-weight:700;letter-spacing:-.5px;color:var(–white);text-decoration:none}
+.nav-logo span{color:var(–accent)}
+.nav-tag{font-family:‘DM Mono’,monospace;font-size:10px;color:var(–white-dim);letter-spacing:2.5px;text-transform:uppercase}
+.nav-cta{background:var(–accent);color:var(–navy);font-family:‘Alexandria’,sans-serif;font-size:13px;
+font-weight:700;padding:10px 22px;text-decoration:none;transition:all .2s;display:inline-block}
+.nav-cta:hover{background:#fff;transform:translateY(-1px)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+padding:140px 48px 90px;position:relative;overflow:hidden;background:var(–navy)}
+.hero-grid{position:absolute;inset:0;
+background-image:linear-gradient(var(–line) 1px,transparent 1px),linear-gradient(90deg,var(–line) 1px,transparent 1px);
+background-size:56px 56px;
+mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,black 20%,transparent 100%)}
+.hero-glow-a{position:absolute;width:700px;height:700px;border-radius:50%;
+background:radial-gradient(circle,rgba(46,204,138,.13) 0%,transparent 65%);top:-200px;right:-150px;pointer-events:none}
+.hero-glow-b{position:absolute;width:400px;height:400px;border-radius:50%;
+background:radial-gradient(circle,rgba(46,100,200,.08) 0%,transparent 65%);bottom:0;left:-100px;pointer-events:none}
+.hero-label{font-family:‘DM Mono’,monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;
+color:var(–accent);margin-bottom:28px;opacity:0;animation:fadeUp .7s .1s forwards}
+.hero-title{font-size:clamp(46px,7.5vw,100px);font-weight:900;line-height:.93;letter-spacing:-3px;
+max-width:820px;color:var(–white);opacity:0;animation:fadeUp .7s .3s forwards}
+.hero-title em{font-style:normal;color:var(–accent)}
+.hero-sub{font-size:clamp(15px,1.8vw,18px);font-weight:300;color:var(–white-dim);
+max-width:520px;margin-top:28px;line-height:1.75;opacity:0;animation:fadeUp .7s .5s forwards}
+.hero-cta{margin-top:44px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;opacity:0;animation:fadeUp .7s .7s forwards}
+.btn-primary{background:var(–accent);color:var(–navy);font-family:‘Alexandria’,sans-serif;font-size:15px;
+font-weight:700;padding:15px 34px;text-decoration:none;display:inline-block;transition:all .2s}
+.btn-primary:hover{background:#fff;transform:translateY(-2px)}
+.btn-link{color:var(–white-dim);font-family:‘DM Mono’,monospace;font-size:12px;text-decoration:none;letter-spacing:1px;transition:color .2s}
+.btn-link:hover{color:var(–white)}
+.hero-stats{display:flex;gap:48px;margin-top:72px;padding-top:44px;border-top:1px solid var(–line);
+flex-wrap:wrap;opacity:0;animation:fadeUp .7s .9s forwards}
+.stat-num{font-size:38px;font-weight:900;letter-spacing:-1.5px;color:var(–white)}
+.stat-num b{color:var(–accent)}
+.stat-label{font-family:‘DM Mono’,monospace;font-size:10px;color:var(–white-dim);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
+
+/* TICKER */
+.ticker-wrap{overflow:hidden;border-top:1px solid var(–line);border-bottom:1px solid var(–line);background:var(–navy-mid);padding:13px 0}
+.ticker{display:flex;gap:56px;animation:ticker 22s linear infinite;white-space:nowrap;width:max-content}
+.ticker-item{font-family:‘DM Mono’,monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(–white-dim);display:flex;align-items:center;gap:14px}
+.ticker-item::before{content:‘◆’;color:var(–accent);font-size:7px}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SECTIONS */
+section{padding:100px 48px;position:relative;background:var(–navy)}
+.section-label{font-family:‘DM Mono’,monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(–accent);margin-bottom:18px}
+.section-title{font-size:clamp(28px,4vw,50px);font-weight:800;letter-spacing:-2px;line-height:1.05;max-width:640px;color:var(–white)}
+.section-title em{font-style:normal;color:var(–accent)}
+
+/* PROBLEM */
+.problem{background:var(–navy-mid) !important;border-top:1px solid var(–line);border-bottom:1px solid var(–line)}
+.problem-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:56px;align-items:start}
+.col-head{font-family:‘DM Mono’,monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;
+margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid}
+.col-head.red{color:var(–red);border-color:var(–red)}
+.col-head.green{color:var(–accent);border-color:var(–accent)}
+.check-list{list-style:none}
+.check-list li{display:flex;gap:14px;padding:15px 0;border-bottom:1px solid var(–line);font-size:14px;line-height:1.65;align-items:flex-start;color:var(–white)}
+.check-list li .ico{font-family:‘DM Mono’,monospace;font-size:13px;flex-shrink:0;margin-top:1px}
+.check-list.bad li{color:var(–white-dim)}
+.check-list.bad li .ico{color:var(–red)}
+.check-list.good li .ico{color:var(–accent)}
+.pain-block{margin-top:56px;background:var(–navy-card);border:1px solid var(–line-mid);padding:36px 40px;border-left:3px solid var(–accent)}
+.pain-block p{font-size:14px;color:var(–white-dim);line-height:1.85;margin-bottom:16px}
+.pain-block p:last-child{margin-bottom:0}
+.pain-block strong{color:var(–white);font-weight:600}
+
+/* HOW */
+.how{background:var(–navy) !important;border-bottom:1px solid var(–line)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:56px}
+.step{background:var(–navy-mid);padding:36px 32px;position:relative;overflow:hidden;transition:background .3s}
+.step:hover{background:var(–navy-card)}
+.step::before{content:’’;position:absolute;top:0;left:0;right:0;height:2px;background:var(–accent);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.step:hover::before{transform:scaleX(1)}
+.step-num{font-family:‘DM Mono’,monospace;font-size:10px;color:var(–accent);letter-spacing:2px;margin-bottom:20px}
+.step-icon{font-size:28px;margin-bottom:16px;display:block}
+.step-title{font-size:17px;font-weight:700;letter-spacing:-.3px;margin-bottom:10px;color:var(–white)}
+.step-desc{font-size:13px;color:var(–white-dim);line-height:1.75;font-weight:300}
+
+/* AI MOCK */
+.platform{background:var(–navy-mid) !important;border-top:1px solid var(–line);border-bottom:1px solid var(–line)}
+.ai-mock{margin-top:56px;background:var(–navy-card);border:1px solid var(–line-mid);overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.55)}
+.ai-chrome{background:#080F1C;border-bottom:1px solid var(–line);padding:10px 18px;display:flex;align-items:center;gap:10px}
+.ai-dots{display:flex;gap:5px}
+.ai-dot{width:9px;height:9px;border-radius:50%}
+.ai-dot:nth-child(1){background:#e05252}
+.ai-dot:nth-child(2){background:#e0b452}
+.ai-dot:nth-child(3){background:#52c252}
+.ai-url{background:rgba(255,255,255,.04);border:1px solid var(–line);border-radius:3px;padding:3px 12px;font-family:‘DM Mono’,monospace;font-size:9px;color:var(–white-faint);margin-left:8px}
+.ai-body{display:grid;grid-template-columns:1fr 1fr;min-height:520px}
+.ai-upload{background:#0A1628;border-right:1px solid var(–line);padding:28px;display:flex;flex-direction:column;gap:16px}
+.ai-panel-title{font-family:‘DM Mono’,monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(–accent);margin-bottom:4px}
+.ai-file-box{background:rgba(255,255,255,.03);border:2px dashed rgba(46,204,138,.3);padding:22px 16px;text-align:center;cursor:pointer}
+.ai-file-icon{font-size:28px;margin-bottom:10px}
+.ai-file-label{font-size:12px;font-weight:600;color:var(–white);margin-bottom:4px}
+.ai-file-sub{font-family:‘DM Mono’,monospace;font-size:9px;color:var(–white-faint);letter-spacing:1px}
+.ai-file-item{background:rgba(255,255,255,.04);border:1px solid var(–line);padding:10px 14px;display:flex;align-items:center;gap:10px}
+.ai-file-item .fi-icon{font-size:18px;flex-shrink:0}
+.ai-file-item .fi-name{font-size:11px;font-weight:600;color:var(–white);flex:1}
+.ai-file-item .fi-meta{font-family:‘DM Mono’,monospace;font-size:9px;color:var(–white-dim)}
+.ai-file-item .fi-badge{font-family:‘DM Mono’,monospace;font-size:8px;padding:2px 7px;font-weight:700;letter-spacing:.5px;border-radius:2px}
+.fi-badge.done{background:var(–accent);color:var(–navy)}
+.fi-badge.proc{background:rgba(46,204,138,.15);color:var(–accent);border:1px solid rgba(46,204,138,.3)}
+.ai-progress{background:rgba(255,255,255,.05);border:1px solid var(–line);padding:14px}
+.ai-prog-label{font-family:‘DM Mono’,monospace;font-size:9px;color:var(–accent);letter-spacing:1.5px;margin-bottom:8px;display:flex;justify-content:space-between}
+.ai-prog-bar{height:4px;background:rgba(255,255,255,.07);overflow:hidden}
+.ai-prog-fill{height:100%;background:linear-gradient(90deg,var(–accent),#6ee7c7);animation:progAnim 2s ease-in-out infinite alternate}
+@keyframes progAnim{from{width:65%}to{width:82%}}
+.ai-log{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.ai-log-line{font-family:‘DM Mono’,monospace;font-size:9px;color:var(–white-faint);display:flex;gap:8px;align-items:baseline}
+.ai-log-line .ts{color:var(–accent);opacity:.6;flex-shrink:0}
+.ai-log-line.ok{color:var(–white-dim)}
+.ai-log-line.ok .ts{opacity:1}
+.ai-output{background:#0D1B2D;padding:28px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.ai-output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.ai-badge-green{background:var(–accent);color:var(–navy);font-family:‘DM Mono’,monospace;font-size:8px;padding:3px 8px;font-weight:700;letter-spacing:1px}
+.ai-stats-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px}
+.ai-stat-mini{background:rgba(255,255,255,.04);border:1px solid var(–line);padding:10px 12px}
+.ai-stat-mini .v{font-size:18px;font-weight:900;color:var(–white);letter-spacing:-1px}
+.ai-stat-mini .v b{color:var(–accent)}
+.ai-stat-mini .l{font-family:‘DM Mono’,monospace;font-size:8px;color:var(–white-faint);letter-spacing:.8px;text-transform:uppercase;margin-top:2px}
+.ai-product-row{background:rgba(255,255,255,.03);border:1px solid var(–line);padding:10px 14px;display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;cursor:pointer;transition:border-color .2s}
+.ai-product-row:hover{border-color:rgba(46,204,138,.35)}
+.ai-product-row .pr-icon{font-size:18px}
+.ai-product-row .pr-name{font-size:11px;font-weight:600;color:var(–white)}
+.ai-product-row .pr-sku{font-family:‘DM Mono’,monospace;font-size:8px;color:var(–white-dim);margin-top:2px}
+.ai-product-row .pr-price{font-size:13px;font-weight:700;color:var(–white);white-space:nowrap}
+.ai-product-row .pr-conf{font-family:‘DM Mono’,monospace;font-size:8px;padding:2px 6px;background:var(–accent-dim);color:var(–accent);border:1px solid rgba(46,204,138,.25)}
+.ai-caption{text-align:center;padding:12px;font-family:‘DM Mono’,monospace;font-size:9px;color:var(–white-faint);letter-spacing:1.5px;border-top:1px solid var(–line)}
+
+/* BENEFITS */
+.benefits{background:var(–navy) !important}
+.benefits-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:56px}
+.benefit-card{background:var(–navy-mid);padding:36px;border:1px solid var(–line);transition:border-color .3s,background .3s}
+.benefit-card:hover{border-color:rgba(46,204,138,.35);background:var(–navy-card)}
+.benefit-icon{width:42px;height:42px;background:var(–accent-dim);border:1px solid rgba(46,204,138,.3);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:20px}
+.benefit-title{font-size:17px;font-weight:700;letter-spacing:-.3px;margin-bottom:8px;color:var(–white)}
+.benefit-desc{font-size:13px;color:var(–white-dim);line-height:1.75;font-weight:300}
+.mvp-strip{margin-top:56px;background:var(–navy-card);border:1px solid rgba(46,204,138,.2);padding:32px 36px;display:flex;gap:20px;align-items:flex-start}
+.mvp-icon{font-size:26px;flex-shrink:0;margin-top:2px}
+.mvp-text{font-size:13px;color:var(–white-dim);line-height:1.85}
+.mvp-text strong{color:var(–white);font-weight:600}
+
+/* CTA */
+.cta-section{background:var(–navy-mid) !important;border-top:1px solid var(–line);text-align:center;padding:120px 48px;position:relative;overflow:hidden}
+.cta-glow{position:absolute;width:900px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(46,204,138,.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.cta-section .section-title{max-width:700px;margin:0 auto;font-size:clamp(32px,5vw,60px)}
+.cta-sub{font-size:15px;color:var(–white-dim);margin:20px auto 0;max-width:460px;font-weight:300;line-height:1.75}
+.cta-buttons{display:flex;gap:12px;justify-content:center;align-items:center;margin-top:44px;flex-wrap:wrap}
+.btn-whatsapp{background:#25D366;color:#fff;font-family:‘Alexandria’,sans-serif;font-size:15px;font-weight:700;
+padding:16px 28px;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:all .2s}
+.btn-whatsapp:hover{background:#1db954;transform:translateY(-2px)}
+.btn-email{background:transparent;color:var(–white);font-family:‘Alexandria’,sans-serif;font-size:15px;font-weight:600;
+padding:16px 28px;border:1px solid var(–line-mid);text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:all .2s}
+.btn-email:hover{border-color:var(–accent);color:var(–accent)}
+.btn-instagram{background:transparent;color:#e1306c;font-family:‘Alexandria’,sans-serif;font-size:15px;font-weight:600;
+padding:16px 28px;border:1px solid rgba(225,48,108,.35);text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:all .2s}
+.btn-instagram:hover{background:rgba(225,48,108,.1);transform:translateY(-2px)}
+.cta-note{font-family:‘DM Mono’,monospace;font-size:10px;color:var(–white-dim);letter-spacing:1px;margin-top:20px;opacity:.6}
+
+/* FOOTER */
+footer{padding:36px 48px;border-top:1px solid var(–line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;background:var(–navy)}
+.footer-logo{font-size:18px;font-weight:700;letter-spacing:-.5px;color:var(–white)}
+.footer-logo span{color:var(–accent)}
+.footer-text{font-family:‘DM Mono’,monospace;font-size:10px;color:var(–white-dim);letter-spacing:1px}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s,transform .7s}
+.reveal.visible{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* RESPONSIVE */
+@media(max-width:760px){
+nav{padding:16px 20px}.nav-tag{display:none}.nav-cta{padding:9px 16px;font-size:12px}
+.hero{padding:110px 20px 70px}.hero-title{letter-spacing:-2px}.hero-stats{gap:24px}
+section{padding:70px 20px}.section-title{letter-spacing:-1.5px}
+.problem-layout{grid-template-columns:1fr;gap:36px}
+.steps{grid-template-columns:1fr}
+.ai-body{grid-template-columns:1fr}.ai-output{display:none}
+.benefits-grid{grid-template-columns:1fr}
+.cta-section{padding:80px 20px}
+.cta-buttons{flex-direction:column;align-items:center}
+.btn-whatsapp,.btn-email,.btn-instagram{width:100%;justify-content:center}
+footer{padding:28px 20px;flex-direction:column;text-align:center}
+.pain-block{padding:24px 20px}
+.mvp-strip{flex-direction:column}
+}
+@media(max-width:480px){
+.hero-stats{gap:20px}
+}
+</style>
 
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0
-        }
-
-        html {
-            scroll-behavior: smooth
-        }
-
-        body {
-            background: var(--navy);
-            color: var(--white);
-            font-family: 'Alexandria', sans-serif;
-            overflow-x: hidden
-        }
-
-        /* NAV */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 200;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 48px;
-            border-bottom: 1px solid var(--line);
-            backdrop-filter: blur(20px);
-            background: rgba(10, 22, 40, .92)
-        }
-
-        .nav-logo {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -.5px;
-            color: var(--white);
-            text-decoration: none
-        }
-
-        .nav-logo span {
-            color: var(--accent)
-        }
-
-        .nav-tag {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--white-dim);
-            letter-spacing: 2.5px;
-            text-transform: uppercase
-        }
-
-        .nav-cta {
-            background: var(--accent);
-            color: var(--navy);
-            font-family: 'Alexandria', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 10px 22px;
-            text-decoration: none;
-            transition: all .2s;
-            display: inline-block
-        }
-
-        .nav-cta:hover {
-            background: #fff;
-            transform: translateY(-1px)
-        }
-
-        /* HERO */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 140px 48px 90px;
-            position: relative;
-            overflow: hidden;
-            background: var(--navy)
-        }
-
-        .hero-grid {
-            position: absolute;
-            inset: 0;
-            background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
-            background-size: 56px 56px;
-            mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 100%)
-        }
-
-        .hero-glow-a {
-            position: absolute;
-            width: 700px;
-            height: 700px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(46, 204, 138, .13) 0%, transparent 65%);
-            top: -200px;
-            right: -150px;
-            pointer-events: none
-        }
-
-        .hero-glow-b {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(46, 100, 200, .08) 0%, transparent 65%);
-            bottom: 0;
-            left: -100px;
-            pointer-events: none
-        }
-
-        .hero-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: 28px;
-            opacity: 0;
-            animation: fadeUp .7s .1s forwards
-        }
-
-        .hero-title {
-            font-size: clamp(46px, 7.5vw, 100px);
-            font-weight: 900;
-            line-height: .93;
-            letter-spacing: -3px;
-            max-width: 820px;
-            color: var(--white);
-            opacity: 0;
-            animation: fadeUp .7s .3s forwards
-        }
-
-        .hero-title em {
-            font-style: normal;
-            color: var(--accent)
-        }
-
-        .hero-sub {
-            font-size: clamp(15px, 1.8vw, 18px);
-            font-weight: 300;
-            color: var(--white-dim);
-            max-width: 520px;
-            margin-top: 28px;
-            line-height: 1.75;
-            opacity: 0;
-            animation: fadeUp .7s .5s forwards
-        }
-
-        .hero-cta {
-            margin-top: 44px;
-            display: flex;
-            gap: 14px;
-            align-items: center;
-            flex-wrap: wrap;
-            opacity: 0;
-            animation: fadeUp .7s .7s forwards
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: var(--navy);
-            font-family: 'Alexandria', sans-serif;
-            font-size: 15px;
-            font-weight: 700;
-            padding: 15px 34px;
-            text-decoration: none;
-            display: inline-block;
-            transition: all .2s
-        }
-
-        .btn-primary:hover {
-            background: #fff;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 36px rgba(46, 204, 138, .28)
-        }
-
-        .btn-link {
-            color: var(--white-dim);
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            text-decoration: none;
-            letter-spacing: 1px;
-            transition: color .2s
-        }
-
-        .btn-link:hover {
-            color: var(--white)
-        }
-
-        .hero-stats {
-            display: flex;
-            gap: 48px;
-            margin-top: 72px;
-            padding-top: 44px;
-            border-top: 1px solid var(--line);
-            flex-wrap: wrap;
-            opacity: 0;
-            animation: fadeUp .7s .9s forwards
-        }
-
-        .stat-num {
-            font-size: 38px;
-            font-weight: 900;
-            letter-spacing: -1.5px;
-            color: var(--white)
-        }
-
-        .stat-num b {
-            color: var(--accent)
-        }
-
-        .stat-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--white-dim);
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-top: 4px
-        }
-
-        /* TICKER */
-        .ticker-wrap {
-            overflow: hidden;
-            border-top: 1px solid var(--line);
-            border-bottom: 1px solid var(--line);
-            background: var(--navy-mid);
-            padding: 13px 0
-        }
-
-        .ticker {
-            display: flex;
-            gap: 56px;
-            animation: ticker 22s linear infinite;
-            white-space: nowrap;
-            width: max-content
-        }
-
-        .ticker-item {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            color: var(--white-dim);
-            display: flex;
-            align-items: center;
-            gap: 14px
-        }
-
-        .ticker-item::before {
-            content: '◆';
-            color: var(--accent);
-            font-size: 7px
-        }
-
-        @keyframes ticker {
-            from {
-                transform: translateX(0)
-            }
-
-            to {
-                transform: translateX(-50%)
-            }
-        }
-
-        /* SECTIONS */
-        section {
-            padding: 100px 48px;
-            position: relative;
-            background: var(--navy)
-        }
-
-        .section-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: 18px
-        }
-
-        .section-title {
-            font-size: clamp(28px, 4vw, 50px);
-            font-weight: 800;
-            letter-spacing: -2px;
-            line-height: 1.05;
-            max-width: 640px;
-            color: var(--white)
-        }
-
-        .section-title em {
-            font-style: normal;
-            color: var(--accent)
-        }
-
-        /* PROBLEM */
-        .problem {
-            background: var(--navy-mid) !important;
-            border-top: 1px solid var(--line);
-            border-bottom: 1px solid var(--line)
-        }
-
-        .problem-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            margin-top: 56px;
-            align-items: start
-        }
-
-        .col-head {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 24px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid
-        }
-
-        .col-head.red {
-            color: var(--red);
-            border-color: var(--red)
-        }
-
-        .col-head.green {
-            color: var(--accent);
-            border-color: var(--accent)
-        }
-
-        .check-list {
-            list-style: none
-        }
-
-        .check-list li {
-            display: flex;
-            gap: 14px;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--line);
-            font-size: 14px;
-            line-height: 1.65;
-            align-items: flex-start;
-            color: var(--white)
-        }
-
-        .check-list li .ico {
-            font-family: 'DM Mono', monospace;
-            font-size: 13px;
-            flex-shrink: 0;
-            margin-top: 1px
-        }
-
-        .check-list.bad li {
-            color: var(--white-dim)
-        }
-
-        .check-list.bad li .ico {
-            color: var(--red)
-        }
-
-        .check-list.good li .ico {
-            color: var(--accent)
-        }
-
-        .pain-block {
-            margin-top: 56px;
-            background: var(--navy-card);
-            border: 1px solid var(--line-mid);
-            padding: 36px 40px;
-            border-left: 3px solid var(--accent)
-        }
-
-        .pain-block p {
-            font-size: 14px;
-            color: var(--white-dim);
-            line-height: 1.85;
-            margin-bottom: 16px
-        }
-
-        .pain-block p:last-child {
-            margin-bottom: 0
-        }
-
-        .pain-block strong {
-            color: var(--white);
-            font-weight: 600
-        }
-
-        /* HOW */
-        .how {
-            background: var(--navy) !important;
-            border-bottom: 1px solid var(--line)
-        }
-
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
-            margin-top: 56px
-        }
-
-        .step {
-            background: var(--navy-mid);
-            padding: 36px 32px;
-            position: relative;
-            overflow: hidden;
-            transition: background .3s
-        }
-
-        .step:hover {
-            background: var(--navy-card)
-        }
-
-        .step::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform .4s
-        }
-
-        .step:hover::before {
-            transform: scaleX(1)
-        }
-
-        .step-num {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--accent);
-            letter-spacing: 2px;
-            margin-bottom: 20px
-        }
-
-        .step-icon {
-            font-size: 28px;
-            margin-bottom: 16px;
-            display: block
-        }
-
-        .step-title {
-            font-size: 17px;
-            font-weight: 700;
-            letter-spacing: -.3px;
-            margin-bottom: 10px;
-            color: var(--white)
-        }
-
-        .step-desc {
-            font-size: 13px;
-            color: var(--white-dim);
-            line-height: 1.75;
-            font-weight: 300
-        }
-
-        /* AI MOCK */
-        .platform {
-            background: var(--navy-mid) !important;
-            border-top: 1px solid var(--line);
-            border-bottom: 1px solid var(--line)
-        }
-
-        .ai-mock {
-            margin-top: 56px;
-            background: var(--navy-card);
-            border: 1px solid var(--line-mid);
-            overflow: hidden;
-            box-shadow: 0 40px 120px rgba(0, 0, 0, .55)
-        }
-
-        .ai-chrome {
-            background: #080F1C;
-            border-bottom: 1px solid var(--line);
-            padding: 10px 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px
-        }
-
-        .ai-dots {
-            display: flex;
-            gap: 5px
-        }
-
-        .ai-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%
-        }
-
-        .ai-dot:nth-child(1) {
-            background: #e05252
-        }
-
-        .ai-dot:nth-child(2) {
-            background: #e0b452
-        }
-
-        .ai-dot:nth-child(3) {
-            background: #52c252
-        }
-
-        .ai-url {
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid var(--line);
-            border-radius: 3px;
-            padding: 3px 12px;
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            color: var(--white-faint);
-            margin-left: 8px
-        }
-
-        .ai-body {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            min-height: 520px
-        }
-
-        .ai-upload {
-            background: #0A1628;
-            border-right: 1px solid var(--line);
-            padding: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px
-        }
-
-        .ai-panel-title {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: 4px
-        }
-
-        .ai-file-box {
-            background: rgba(255, 255, 255, .03);
-            border: 2px dashed rgba(46, 204, 138, .3);
-            padding: 22px 16px;
-            text-align: center;
-            cursor: pointer
-        }
-
-        .ai-file-icon {
-            font-size: 28px;
-            margin-bottom: 10px
-        }
-
-        .ai-file-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--white);
-            margin-bottom: 4px
-        }
-
-        .ai-file-sub {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            color: var(--white-faint);
-            letter-spacing: 1px
-        }
-
-        .ai-file-item {
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid var(--line);
-            padding: 10px 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px
-        }
-
-        .ai-file-item .fi-icon {
-            font-size: 18px;
-            flex-shrink: 0
-        }
-
-        .ai-file-item .fi-name {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--white);
-            flex: 1
-        }
-
-        .ai-file-item .fi-meta {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            color: var(--white-dim)
-        }
-
-        .ai-file-item .fi-badge {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            padding: 2px 7px;
-            font-weight: 700;
-            letter-spacing: .5px;
-            border-radius: 2px
-        }
-
-        .fi-badge.done {
-            background: var(--accent);
-            color: var(--navy)
-        }
-
-        .fi-badge.proc {
-            background: rgba(46, 204, 138, .15);
-            color: var(--accent);
-            border: 1px solid rgba(46, 204, 138, .3)
-        }
-
-        .ai-progress {
-            background: rgba(255, 255, 255, .05);
-            border: 1px solid var(--line);
-            padding: 14px;
-            margin-top: 4px
-        }
-
-        .ai-prog-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            color: var(--accent);
-            letter-spacing: 1.5px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between
-        }
-
-        .ai-prog-bar {
-            height: 4px;
-            background: rgba(255, 255, 255, .07);
-            overflow: hidden
-        }
-
-        .ai-prog-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), #6ee7c7);
-            width: 73%;
-            animation: progAnim 2s ease-in-out infinite alternate
-        }
-
-        @keyframes progAnim {
-            from {
-                width: 65%
-            }
-
-            to {
-                width: 82%
-            }
-        }
-
-        .ai-log {
-            margin-top: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px
-        }
-
-        .ai-log-line {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            color: var(--white-faint);
-            display: flex;
-            gap: 8px;
-            align-items: baseline
-        }
-
-        .ai-log-line .ts {
-            color: var(--accent);
-            opacity: .6;
-            flex-shrink: 0
-        }
-
-        .ai-log-line.ok {
-            color: var(--white-dim)
-        }
-
-        .ai-log-line.ok .ts {
-            opacity: 1
-        }
-
-        .ai-output {
-            background: #0D1B2D;
-            padding: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            overflow: hidden
-        }
-
-        .ai-output-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 4px
-        }
-
-        .ai-badge-green {
-            background: var(--accent);
-            color: var(--navy);
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            padding: 3px 8px;
-            font-weight: 700;
-            letter-spacing: 1px
-        }
-
-        .ai-stats-mini {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 4px
-        }
-
-        .ai-stat-mini {
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid var(--line);
-            padding: 10px 12px
-        }
-
-        .ai-stat-mini .v {
-            font-size: 18px;
-            font-weight: 900;
-            color: var(--white);
-            letter-spacing: -1px
-        }
-
-        .ai-stat-mini .v b {
-            color: var(--accent)
-        }
-
-        .ai-stat-mini .l {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            color: var(--white-faint);
-            letter-spacing: .8px;
-            text-transform: uppercase;
-            margin-top: 2px
-        }
-
-        .ai-product-row {
-            background: rgba(255, 255, 255, .03);
-            border: 1px solid var(--line);
-            padding: 10px 14px;
-            display: grid;
-            grid-template-columns: auto 1fr auto auto;
-            gap: 10px;
-            align-items: center;
-            cursor: pointer;
-            transition: border-color .2s
-        }
-
-        .ai-product-row:hover {
-            border-color: rgba(46, 204, 138, .35)
-        }
-
-        .ai-product-row .pr-icon {
-            font-size: 18px
-        }
-
-        .ai-product-row .pr-name {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--white)
-        }
-
-        .ai-product-row .pr-sku {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            color: var(--white-dim);
-            margin-top: 2px
-        }
-
-        .ai-product-row .pr-price {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--white);
-            white-space: nowrap
-        }
-
-        .ai-product-row .pr-conf {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            padding: 2px 6px;
-            background: var(--accent-dim);
-            color: var(--accent);
-            border: 1px solid rgba(46, 204, 138, .25)
-        }
-
-        .ai-caption {
-            text-align: center;
-            padding: 12px;
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            color: var(--white-faint);
-            letter-spacing: 1.5px;
-            border-top: 1px solid var(--line)
-        }
-
-        /* BENEFITS */
-        .benefits {
-            background: var(--navy) !important
-        }
-
-        .benefits-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2px;
-            margin-top: 56px
-        }
-
-        .benefit-card {
-            background: var(--navy-mid);
-            padding: 36px;
-            border: 1px solid var(--line);
-            transition: border-color .3s, background .3s
-        }
-
-        .benefit-card:hover {
-            border-color: rgba(46, 204, 138, .35);
-            background: var(--navy-card)
-        }
-
-        .benefit-icon {
-            width: 42px;
-            height: 42px;
-            background: var(--accent-dim);
-            border: 1px solid rgba(46, 204, 138, .3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            margin-bottom: 20px
-        }
-
-        .benefit-title {
-            font-size: 17px;
-            font-weight: 700;
-            letter-spacing: -.3px;
-            margin-bottom: 8px;
-            color: var(--white)
-        }
-
-        .benefit-desc {
-            font-size: 13px;
-            color: var(--white-dim);
-            line-height: 1.75;
-            font-weight: 300
-        }
-
-        .mvp-strip {
-            margin-top: 56px;
-            background: var(--navy-card);
-            border: 1px solid rgba(46, 204, 138, .2);
-            padding: 32px 36px;
-            display: flex;
-            gap: 20px;
-            align-items: flex-start
-        }
-
-        .mvp-icon {
-            font-size: 26px;
-            flex-shrink: 0;
-            margin-top: 2px
-        }
-
-        .mvp-text {
-            font-size: 13px;
-            color: var(--white-dim);
-            line-height: 1.85
-        }
-
-        .mvp-text strong {
-            color: var(--white);
-            font-weight: 600
-        }
-
-        /* CTA */
-        .cta-section {
-            background: var(--navy-mid) !important;
-            border-top: 1px solid var(--line);
-            text-align: center;
-            padding: 120px 48px;
-            position: relative;
-            overflow: hidden
-        }
-
-        .cta-glow {
-            position: absolute;
-            width: 900px;
-            height: 500px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(46, 204, 138, .07) 0%, transparent 70%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none
-        }
-
-        .cta-section .section-title {
-            max-width: 700px;
-            margin: 0 auto;
-            font-size: clamp(32px, 5vw, 60px)
-        }
-
-        .cta-sub {
-            font-size: 15px;
-            color: var(--white-dim);
-            margin: 20px auto 0;
-            max-width: 460px;
-            font-weight: 300;
-            line-height: 1.75
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 44px;
-            flex-wrap: wrap
-        }
-
-        .btn-whatsapp {
-            background: #25D366;
-            color: #fff;
-            font-family: 'Alexandria', sans-serif;
-            font-size: 15px;
-            font-weight: 700;
-            padding: 16px 28px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all .2s
-        }
-
-        .btn-whatsapp:hover {
-            background: #1db954;
-            transform: translateY(-2px)
-        }
-
-        .btn-email {
-            background: transparent;
-            color: var(--white);
-            font-family: 'Alexandria', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            padding: 16px 28px;
-            border: 1px solid var(--line-mid);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all .2s
-        }
-
-        .btn-email:hover {
-            border-color: var(--accent);
-            color: var(--accent)
-        }
-
-        .btn-instagram {
-            background: transparent;
-            color: #e1306c;
-            font-family: 'Alexandria', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            padding: 16px 28px;
-            border: 1px solid rgba(225, 48, 108, .35);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all .2s
-        }
-
-        .btn-instagram:hover {
-            background: rgba(225, 48, 108, .1);
-            transform: translateY(-2px)
-        }
-
-        .cta-note {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--white-dim);
-            letter-spacing: 1px;
-            margin-top: 20px;
-            opacity: .6
-        }
-
-        /* FOOTER */
-        footer {
-            padding: 36px 48px;
-            border-top: 1px solid var(--line);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            background: var(--navy)
-        }
-
-        .footer-logo {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: -.5px;
-            color: var(--white)
-        }
-
-        .footer-logo span {
-            color: var(--accent)
-        }
-
-        .footer-text {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--white-dim);
-            letter-spacing: 1px
-        }
-
-        /* REVEAL */
-        .reveal {
-            opacity: 0;
-            transform: translateY(28px);
-            transition: opacity .7s, transform .7s
-        }
-
-        .reveal.visible {
-            opacity: 1;
-            transform: none
-        }
-
-        .d1 {
-            transition-delay: .1s
-        }
-
-        .d2 {
-            transition-delay: .2s
-        }
-
-        .d3 {
-            transition-delay: .3s
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(22px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
-        }
-
-        /* RESPONSIVE */
-        @media(max-width:760px) {
-            nav {
-                padding: 16px 20px
-            }
-
-            .nav-tag {
-                display: none
-            }
-
-            .nav-cta {
-                padding: 9px 16px;
-                font-size: 12px
-            }
-
-            .hero {
-                padding: 110px 20px 70px
-            }
-
-            .hero-title {
-                letter-spacing: -2px
-            }
-
-            .hero-stats {
-                gap: 24px
-            }
-
-            section {
-                padding: 70px 20px
-            }
-
-            .section-title {
-                letter-spacing: -1.5px
-            }
-
-            .problem-layout {
-                grid-template-columns: 1fr;
-                gap: 36px
-            }
-
-            .steps {
-                grid-template-columns: 1fr
-            }
-
-            .ai-body {
-                grid-template-columns: 1fr
-            }
-
-            .ai-output {
-                display: none
-            }
-
-            .benefits-grid {
-                grid-template-columns: 1fr
-            }
-
-            .cta-section {
-                padding: 80px 20px
-            }
-
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center
-            }
-
-            .btn-whatsapp,
-            .btn-email,
-            .btn-instagram {
-                width: 100%;
-                justify-content: center
-            }
-
-            footer {
-                padding: 28px 20px;
-                flex-direction: column;
-                text-align: center
-            }
-
-            .pain-block {
-                padding: 24px 20px
-            }
-
-            .mvp-strip {
-                flex-direction: column
-            }
-        }
-
-        @media(max-width:480px) {
-            .ai-stats-mini {
-                grid-template-columns: 1fr 1fr
-            }
-
-            .hero-stats {
-                gap: 20px
-            }
-        }
-    </style>
 </head>
+<body>
 
-<body><!-- NAV -->
-    <nav><a href="#hero" class="nav-logo">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">fornece </font>
-            </font><span>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">.</font>
-                </font>
-            </span>
-        </a>
-        <div class="nav-tag">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Plataforma B2B &middot; Ferramentas</font>
-            </font>
-        </div><a href="#contato" class="nav-cta">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Quero participar</font>
-            </font>
-        </a>
-    </nav><!-- HERO -->
-    <section class="hero" id="hero">
-        <div class="hero-grid" id="hero-grid"><br></div>
-        <div class="hero-glow-a"><br></div>
-        <div class="hero-glow-b"><br></div>
-        <p class="hero-label">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Fornecer PRO &mdash; Para Fornecedores</font>
-            </font>
-        </p>
-        <h1 class="hero-title">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Seu cat&aacute;logo. </font>
-            </font><br><em>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Organizado.</font>
-                </font>
-            </em><br>
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto"> Vendendo.</font>
-            </font>
-        </h1>
-        <p class="hero-sub">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">A plataforma B2B que transforma PDFs e planilhas em vitrine digital acess&iacute;vel a lojistas de todo SP &mdash; processada por IA em segundos.</font>
-            </font>
-        </p>
-        <div class="hero-cta"><a href="#contato" class="btn-primary">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Cadastrar meu gui&atilde;o</font>
-                </font>
-            </a> <a href="#como-funciona" class="btn-link">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Ver como funciona &rarr;</font>
-                </font>
-            </a></div>
-        <div class="hero-stats">
-            <div>
-                <div class="stat-num">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">15 </font>
-                    </font><strong>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">segundos</font>
-                        </font>
-                    </strong>
-                </div>
-                <div class="stat-label">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Para&hellip; um</font>
-                    </font>
-                </div>
-            </div>
-            <div>
-                <div class="stat-num">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">100 </font>
-                    </font><strong>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">%</font>
-                        </font>
-                    </strong>
-                </div>
-                <div class="stat-label">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Gratuito na fase MVP</font>
-                    </font>
-                </div>
-            </div>
-            <div>
-                <div class="stat-num"><strong>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">SP</font>
-                        </font>
-                    </strong></div>
-                <div class="stat-label">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Foco inicial: S&atilde;o Paulo</font>
-                    </font>
-                </div>
-            </div>
-        </div>
-    </section><!-- TICKER -->
-    <div class="ticker-wrap">
-        <div class="ticker"><span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Ferramentas El&eacute;tricas</font>
-                </font>
-            </span><span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Ferramentas Manuais</font>
-                </font>
-            </span> <span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Abrasivos e Discos</font>
-                </font>
-            </span><span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">EPI e Seguran&ccedil;a</font>
-                </font>
-            </span> <span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Fixa&ccedil;&atilde;o e Parafusos</font>
-                </font>
-            </span><span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Medita&ccedil;&atilde;o e N&iacute;vel</font>
-                </font>
-            </span> <span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Corte e Perfura&ccedil;&atilde;o</font>
-                </font>
-            </span><span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Materiais El&eacute;tricos</font>
-                </font>
-            </span> <span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Ferramentas El&eacute;tricas</font>
-                </font>
-            </span><span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Ferramentas Manuais</font>
-                </font>
-            </span> <span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Abrasivos e Discos</font>
-                </font>
-            </span><span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">EPI e Seguran&ccedil;a</font>
-                </font>
-            </span> <span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Fixa&ccedil;&atilde;o e Parafusos</font>
-                </font>
-            </span><span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Medita&ccedil;&atilde;o e N&iacute;vel</font>
-                </font>
-            </span> <span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Corte e Perfura&ccedil;&atilde;o</font>
-                </font>
-            </span><span class="ticker-item">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Materiais El&eacute;tricos</font>
-                </font>
-            </span></div>
-    </div><!-- PROBLEM -->
-    <section class="problem reveal" id="problema">
-        <p class="section-label">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">O problema real</font>
-            </font>
-        </p>
-        <h2 class="section-title">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">O WhatsApp n&atilde;o &eacute; um sistema de vendas B2B</font>
-            </font>
-        </h2>
-        <div class="problem-layout">
-            <div>
-                <p class="col-head red">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Como funciona hoje</font>
-                    </font>
-                </p>
-                <ul class="check-list bad">
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✗</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Cat&aacute;logo em PDF enviado no WhatsApp algumas entre conversas</font>
-                        </font>
-                    </li>
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✗</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Pre&ccedil;o desatualizado circulando sem controle entre lojistas</font>
-                        </font>
-                    </li>
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✗</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Lojista n&atilde;o te encontra porque voc&ecirc; n&atilde;o aparece no Google</font>
-                        </font>
-                    </li>
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✗</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Pedido feito por &aacute;udio gera erro de separa&ccedil;&atilde;o e retrabalho</font>
-                        </font>
-                    </li>
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✗</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Voc&ecirc; n&atilde;o sabe quem viu seu cat&aacute;logo nem o que lhe interessa</font>
-                        </font>
-                    </li>
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✗</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Empresas vendem lista de contato de seus clientes sem voc&ecirc; saber</font>
-                        </font>
-                    </li>
-                </ul>
-            </div>
-            <div>
-                <p class="col-head green">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Com o quant</font>
-                    </font>
-                </p>
-                <ul class="check-list good">
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✓</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Cat&aacute;logo sempre atualizado, acess&iacute;vel 24h por qualquer lojista</font>
-                        </font>
-                    </li>
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✓</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Voc&ecirc; controla quais pre&ccedil;os aparecem e para quem</font>
-                        </font>
-                    </li>
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✓</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Lojistas de SP encontram voc&ecirc; buscando por produto ou categoria</font>
-                        </font>
-                    </li>
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✓</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Pedido organizado e rastre&aacute;vel, sem ru&iacute;do de comunica&ccedil;&atilde;o</font>
-                        </font>
-                    </li>
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✓</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Voc&ecirc; acompanha visitas, buscas e interesse por SKU em tempo real</font>
-                        </font>
-                    </li>
-                    <li><span class="ico">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✓</font>
-                            </font>
-                        </span>
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">Seus dados, sua carteira, seu controle total</font>
-                        </font>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="pain-block reveal">
-            <p><strong>
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">O lojista quer velocidade acima de tudo.</font>
-                    </font>
-                </strong>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto"> Quando precisa de um produto, quer saber pre&ccedil;o, disponibilidade e prazo em menos de 2 minutos. Hoje ele liga para 3 fornecedores, espera resposta no WhatsApp, recebe PDF desatualizado &mdash; e compra de quem respondeu mais r&aacute;pido, n&atilde;o de quem tem o melhor produto.</font>
-                </font>
-            </p>
-            <p><strong>
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Voc&ecirc; perde venda por invisibilidade, n&atilde;o por pre&ccedil;o.</font>
-                    </font>
-                </strong>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto"> A maioria dos fornecedores n&atilde;o tem presen&ccedil;a digital organizada. Lojistas novos nunca chegam at&eacute; voc&ecirc; porque simplesmente n&atilde;o te encontram. N&atilde;o existe um buscador de fornecedores de ferramentas no Brasil com dados em tempo real &mdash; o Fornecer vai ser esse lugar.</font>
-                </font>
-            </p>
-            <p><strong>
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Desenvolver um mercado pr&oacute;prio custa caro e demora meses.</font>
-                    </font>
-                </strong>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto"> Uma plataforma B2B pr&oacute;pria exige desenvolvimento, manuten&ccedil;&atilde;o e equipe t&eacute;cnica. O fornecimento elimina essa barreira: voc&ecirc; coloca seu cat&aacute;logo no digital hoje, sem c&oacute;digo, sem custo, sem contrato.</font>
-                </font>
-            </p>
-        </div>
-    </section><!-- HOW -->
-    <section class="how reveal" id="como-funciona">
-        <p class="section-label">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Como funciona</font>
-            </font>
-        </p>
-        <h2 class="section-title">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Do cat&aacute;logo &agrave; vitrine em minutos</font>
-            </font>
-        </h2>
-        <div class="steps">
-            <div class="step reveal d1">
-                <p class="step-num">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">01 &mdash;</font>
-                    </font>
-                </p><span class="step-icon">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">📄</font>
-                    </font>
-                </span>
-                <h3 class="step-title">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Voc&ecirc; envia seuz</font>
-                    </font>
-                </h3>
-                <p class="step-desc">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">PDF, Excel, imagem &mdash; qualquer formato que voc&ecirc; j&aacute; use. N&atilde;o preciso reformatar nada antes.</font>
-                    </font>
-                </p>
-            </div>
-            <div class="step reveal d2">
-                <p class="step-num">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">02 &mdash;</font>
-                    </font>
-                </p><span class="step-icon">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">⚡</font>
-                    </font>
-                </span>
-                <h3 class="step-title">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Nossa IA processa tudo</font>
-                    </font>
-                </h3>
-                <p class="step-desc">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Extra&iacute;mos nome, c&oacute;digo, categoria, pre&ccedil;o e especifica&ccedil;&otilde;es de cada produto automaticamente. Em segundos, n&atilde;o em dias.</font>
-                    </font>
-                </p>
-            </div>
-            <div class="step reveal d3">
-                <p class="step-num">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">03 &mdash;</font>
-                    </font>
-                </p><span class="step-icon">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">🏪</font>
-                    </font>
-                </span>
-                <h3 class="step-title">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Sua vitrine vai ao ar</font>
-                    </font>
-                </h3>
-                <p class="step-desc">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Lojistas cadastrados de SP encontram seus produtos, comparem e ambos em contato direto. Voc&ecirc; recebe o lead qualificado.</font>
-                    </font>
-                </p>
-            </div>
-        </div>
-    </section><!-- AI PLATFORM MOCK -->
-    <section class="platform reveal" id="plataforma">
-        <p class="section-label">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Uma tecnologia</font>
-            </font>
-        </p>
-        <h2 class="section-title">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">IA que l&ecirc; qualquer cat&aacute;logo e extrai tudo automaticamente</font>
-            </font>
-        </h2>
-        <p style="color:var(--white-dim);font-size:14px;margin-top:14px;max-width:540px;font-weight:300;line-height:1.7;">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Voc&ecirc; envia o arquivo. A IA identifica cada produto, extrai dados estruturados e monta a vitrine em tempo real &mdash; sem nenhuma interven&ccedil;&atilde;o manual.</font>
-            </font>
-        </p>
-        <div class="ai-mock">
-            <div class="ai-chrome">
-                <div class="ai-dots">
-                    <div class="ai-dot"><br></div>
-                    <div class="ai-dot"><br></div>
-                    <div class="ai-dot"><br></div>
-                </div>
-                <div class="ai-url">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">app.fornece.com.br/pro/processar-catalogo</font>
-                    </font>
-                </div>
-            </div>
-            <div class="ai-body">
-                <div class="ai-upload">
-                    <div class="ai-panel-title">
-                        <font style="vertical-align: inherit;" dir="auto">
-                            <font style="vertical-align: inherit;" dir="auto">📁 especificamente um ret&acirc;ngulo</font>
-                        </font>
-                    </div>
-                    <div class="ai-file-box">
-                        <div class="ai-file-icon">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">📄</font>
-                            </font>
-                        </div>
-                        <div class="ai-file-label">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">Arraste o arquivo aqui</font>
-                            </font>
-                        </div>
-                        <div class="ai-file-sub">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">PDF &middot; XLSX &middot; CSV &middot; JPG &middot; PNG</font>
-                            </font>
-                        </div>
-                    </div>
-                    <div class="ai-file-item"><span class="fi-icon">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">📋</font>
-                            </font>
-                        </span>
-                        <div>
-                            <div class="fi-name">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">catalogo_vonder_2025.pdf</font>
-                                </font>
-                            </div>
-                            <div class="fi-meta">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">5 p&aacute;ginas &middot; 2,1 MB</font>
-                                </font>
-                            </div>
-                        </div><span class="fi-badge done">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✓ PRONTO</font>
-                            </font>
-                        </span>
-                    </div>
-                    <div class="ai-file-item"><span class="fi-icon">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">📊</font>
-                            </font>
-                        </span>
-                        <div>
-                            <div class="fi-name">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">tabela_pre&ccedil;os_jan.xlsx</font>
-                                </font>
-                            </div>
-                            <div class="fi-meta">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">3 abas &middot; 847 linhas</font>
-                                </font>
-                            </div>
-                        </div><span class="fi-badge proc">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">⟳ PROC.</font>
-                            </font>
-                        </span>
-                    </div>
-                    <div class="ai-progress">
-                        <div class="ai-prog-label"><span>
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">PROCESSANDO IA</font>
-                                </font>
-                            </span> <span style="color:var(--white-dim);">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">73%</font>
-                                </font>
-                            </span></div>
-                        <div class="ai-prog-bar">
-                            <div class="ai-prog-fill"><br></div>
-                        </div>
-                        <div class="ai-log">
-                            <div class="ai-log-line ok"><span class="ts">
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">00:01</font>
-                                    </font>
-                                </span><span>
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">36 produtos extra&iacute;dos do PDF</font>
-                                    </font>
-                                </span></div>
-                            <div class="ai-log-line ok"><span class="ts">
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">00:03</font>
-                                    </font>
-                                </span><span>
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">Categorias identificadas: 4</font>
-                                    </font>
-                                </span></div>
-                            <div class="ai-log-line ok"><span class="ts">
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">00:08</font>
-                                    </font>
-                                </span><span>
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">Pre&ccedil;os e SKUs mapeados</font>
-                                    </font>
-                                </span></div>
-                            <div class="ai-log-line"><span class="ts">
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">00:11</font>
-                                    </font>
-                                </span><span style="color:var(--accent);opacity:.7;">
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">Normalizando planilha Excel...</font>
-                                    </font>
-                                </span></div>
-                            <div class="ai-log-line"><span class="ts">
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">00:14</font>
-                                    </font>
-                                </span><span>
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">Aguardando valida&ccedil;&atilde;o...</font>
-                                    </font>
-                                </span></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="ai-output">
-                    <div class="ai-output-header">
-                        <div class="ai-panel-title">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">✦ Produtos extra&iacute;dos pela IA</font>
-                            </font>
-                        </div><span class="ai-badge-green">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">36 PRODUTOS</font>
-                            </font>
-                        </span>
-                    </div>
-                    <div class="ai-stats-mini">
-                        <div class="ai-stat-mini">
-                            <div class="v">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">36</font>
-                                </font>
-                            </div>
-                            <div class="l">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">SKUs</font>
-                                </font>
-                            </div>
-                        </div>
-                        <div class="ai-stat-mini">
-                            <div class="v"><strong>
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">4</font>
-                                    </font>
-                                </strong></div>
-                            <div class="l">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">Categorias</font>
-                                </font>
-                            </div>
-                        </div>
-                        <div class="ai-stat-mini">
-                            <div class="v">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">98 </font>
-                                </font><strong>
-                                    <font style="vertical-align: inherit;" dir="auto">
-                                        <font style="vertical-align: inherit;" dir="auto">%</font>
-                                    </font>
-                                </strong>
-                            </div>
-                            <div class="l">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">Confian&ccedil;a</font>
-                                </font>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ai-product-row"><span class="pr-icon">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">🔧</font>
-                            </font>
-                        </span>
-                        <div>
-                            <div class="pr-name">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">Furadeira de Impacto 750W</font>
-                                </font>
-                            </div>
-                            <div class="pr-sku">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">SKU: VD-FI750 &middot; Perfura&ccedil;&atilde;o</font>
-                                </font>
-                            </div>
-                        </div>
-                        <div class="pr-price">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">R$ 187,00</font>
-                            </font>
-                        </div><span class="pr-conf">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">99%</font>
-                            </font>
-                        </span>
-                    </div>
-                    <div class="ai-product-row"><span class="pr-icon">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">⚡</font>
-                            </font>
-                        </span>
-                        <div>
-                            <div class="pr-name">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">Serra Circular 7.1/4&quot; 1400W</font>
-                                </font>
-                            </div>
-                            <div class="pr-sku">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">SKU: VD-SC714 &middot; Corte</font>
-                                </font>
-                            </div>
-                        </div>
-                        <div class="pr-price">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">R$ 312,50</font>
-                            </font>
-                        </div><span class="pr-conf">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">97%</font>
-                            </font>
-                        </span>
-                    </div>
-                    <div class="ai-product-row"><span class="pr-icon">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">🔩</font>
-                            </font>
-                        </span>
-                        <div>
-                            <div class="pr-name">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">Esmerilhadeira Angular 4,1/2&quot;</font>
-                                </font>
-                            </div>
-                            <div class="pr-sku">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">SKU: VD-EA412 &middot; Corte</font>
-                                </font>
-                            </div>
-                        </div>
-                        <div class="pr-price">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">R$ 142,90</font>
-                            </font>
-                        </div><span class="pr-conf">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">98%</font>
-                            </font>
-                        </span>
-                    </div>
-                    <div class="ai-product-row"><span class="pr-icon">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">🪛</font>
-                            </font>
-                        </span>
-                        <div>
-                            <div class="pr-name">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">Parafusadeira 12V Bateria</font>
-                                </font>
-                            </div>
-                            <div class="pr-sku">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">SKU: VD-PF12 &middot; Fixa&ccedil;&atilde;o</font>
-                                </font>
-                            </div>
-                        </div>
-                        <div class="pr-price">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">R$ 224,00</font>
-                            </font>
-                        </div><span class="pr-conf">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">96%</font>
-                            </font>
-                        </span>
-                    </div>
-                    <div class="ai-product-row"><span class="pr-icon">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">📏</font>
-                            </font>
-                        </span>
-                        <div>
-                            <div class="pr-name">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">Trena Digital a Laser 40m</font>
-                                </font>
-                            </div>
-                            <div class="pr-sku">
-                                <font style="vertical-align: inherit;" dir="auto">
-                                    <font style="vertical-align: inherit;" dir="auto">SKU: VD-TL40 &middot; Medi&ccedil;&atilde;o</font>
-                                </font>
-                            </div>
-                        </div>
-                        <div class="pr-price">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">R$ 89,90</font>
-                            </font>
-                        </div><span class="pr-conf">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">99%</font>
-                            </font>
-                        </span>
-                    </div>
-                    <div style="text-align:center;padding:8px 0;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--white-faint);letter-spacing:1px;">
-                            <font style="vertical-align: inherit;" dir="auto">
-                                <font style="vertical-align: inherit;" dir="auto">+ 31 produtos processados &middot; Tempo total: 15s</font>
-                            </font>
-                        </span></div>
-                </div>
-            </div>
-            <div class="ai-caption">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">&mdash; Demonstra&ccedil;&atilde;o do processamento de IA &middot; Interface em desenvolvimento &mdash;</font>
-                </font>
-            </div>
-        </div>
-    </section><!-- BENEFITS -->
-    <section class="benefits reveal">
-        <p class="section-label">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Por que agora</font>
-            </font>
-        </p>
-        <h2 class="section-title">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Feito para quem j&aacute; vende, mas quer vender </font>
-            </font><em>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">mais</font>
-                </font>
-            </em>
-        </h2>
-        <div class="benefits-grid">
-            <div class="benefit-card reveal d1">
-                <div class="benefit-icon">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">🔒</font>
-                    </font>
-                </div>
-                <h3 class="benefit-title">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Seus pre&ccedil;os s&atilde;o seus</font>
-                    </font>
-                </h3>
-                <p class="benefit-desc">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Controle total de visibilidade. Voc&ecirc; define o que &eacute; p&uacute;blico e o que fica exclusivo para lojistas cadastrados e selecionados.</font>
-                    </font>
-                </p>
-            </div>
-            <div class="benefit-card reveal d2">
-                <div class="benefit-icon">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">🎯</font>
-                    </font>
-                </div>
-                <h3 class="benefit-title">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Apenas lojistas B2B</font>
-                    </font>
-                </h3>
-                <p class="benefit-desc">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Acesso restrito ao CNPJ ativo selecionado. Nada de consumidor final ou concorrente de sua tabela de pre&ccedil;os.</font>
-                    </font>
-                </p>
-            </div>
-            <div class="benefit-card reveal d1">
-                <div class="benefit-icon">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">📊</font>
-                    </font>
-                </div>
-                <h3 class="benefit-title">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Voc&ecirc; sabe o que interessa</font>
-                    </font>
-                </h3>
-                <p class="benefit-desc">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Veja quais produtos s&atilde;o mais procurados, quais lojistas acessaram seu cat&aacute;logo e onde est&atilde;o as oportunidades reais.</font>
-                    </font>
-                </p>
-            </div>
-            <div class="benefit-card reveal d2">
-                <div class="benefit-icon">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">🚀</font>
-                    </font>
-                </div>
-                <h3 class="benefit-title">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Zero barreiras de entrada</font>
-                    </font>
-                </h3>
-                <p class="benefit-desc">
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Sem desenvolvimento, sem contrato, sem custo. Voc&ecirc; envia o cat&aacute;logo que j&aacute; tem e a IA faz o resto em segundos.</font>
-                    </font>
-                </p>
-            </div>
-        </div>
-        <div class="mvp-strip reveal"><span class="mvp-icon">
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">🔬</font>
-                </font>
-            </span>
-            <div class="mvp-text"><strong>
-                    <font style="vertical-align: inherit;" dir="auto">
-                        <font style="vertical-align: inherit;" dir="auto">Fase MVP &mdash; Ferramentas primeiro, expans&atilde;o depois.</font>
-                    </font>
-                </strong>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto"> O fornecimento come&ccedil;a focado no setor de ferramentas em S&atilde;o Paulo. Fornecedores com diversas categorias (el&eacute;trica, hidr&aacute;ulica, EPI, constru&ccedil;&atilde;o) j&aacute; s&atilde;o bem-vindos. A expans&atilde;o para outros setores est&aacute; prevista nas pr&oacute;ximas vers&otilde;es, com arquitetura constru&iacute;da desde o in&iacute;cio para suportar isso.</font>
-                </font>
-            </div>
-        </div>
-    </section><!-- CTA -->
-    <section class="cta-section reveal" id="contato">
-        <div class="cta-glow"><br></div>
-        <p class="section-label">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Partic&iacute;pio agora</font>
-            </font>
-        </p>
-        <h2 class="section-title">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Selecionando os </font>
-            </font><em>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">10 primeiros</font>
-                </font>
-            </em>
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto"> fornecedores</font>
-            </font>
-        </h2>
-        <p class="cta-sub">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Vagas limitadas para a fase de testes. Sem custo, sem compromisso. Envie seu cat&aacute;logo e veja o resultado da IA em tempo real.</font>
-            </font>
-        </p>
-        <div class="cta-buttons"><a href="https://wa.me/5511964316557?text=Ola%2C%20tenho%20interesse%20em%20participar%20da%20fase%20inicial%20do%20Fornece%20como%20fornecedor." class="btn-whatsapp" target="_blank">&nbsp;<svg width="18" height="18" fill="currentColor">&nbsp;<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path>&nbsp;</svg>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">Falar no WhatsApp&nbsp;</font>
-                </font>
-            </a> <a href="mailto:alvaro.rasteli@gmail.com?subject=Interesse no Fornece - Quero cadastrar meu catalogo&body=Ola Alvaro, tenho interesse em participar da fase inicial do Fornece como fornecedor. Meu nome / empresa: . Aguardo retorno!" class="btn-email">&nbsp;<svg width="16" height="16" fill="none">&nbsp;<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>&nbsp;</svg>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">e-mail&nbsp;</font>
-                </font>
-            </a> <a href="https://www.instagram.com/fornecehub?igsh=MXV6dmdrY3BsemZxNQ==&utm_source=qr" class="btn-instagram" target="_blank">&nbsp;<svg width="16" height="16" fill="none">&nbsp;<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>&nbsp;</svg>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">@fornecehub&nbsp;</font>
-                </font>
-            </a></div>
-        <p class="cta-note">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">Resposta em at&eacute; 24h &middot; Sem spam &middot; Sem compromisso</font>
-            </font>
-        </p>
-    </section>
-    <footer>
-        <div class="footer-logo">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">fornece </font>
-            </font><span>
-                <font style="vertical-align: inherit;" dir="auto">
-                    <font style="vertical-align: inherit;" dir="auto">.</font>
-                </font>
-            </span>
-        </div>
-        <div class="footer-text">
-            <font style="vertical-align: inherit;" dir="auto">
-                <font style="vertical-align: inherit;" dir="auto">MVP &middot; Ferramentas &middot; S&atilde;o Paulo &middot; 2025</font>
-            </font>
-        </div>
-    </footer>
-    <script>
-        const grid = document.getElementById('hero-grid');
-        window.addEventListener('scroll', () => {
-          if (grid) grid.style.transform = 'translateY(' + (window.scrollY * 0.28) + 'px)';
-        }, { passive: true });
-        
-        const io = new IntersectionObserver(entries => {
-          entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }});
-        }, { threshold: 0.07 });
-        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-        
-        document.querySelectorAll('a[href^="#"]').forEach(a => {
-          a.addEventListener('click', e => {
-            const t = document.querySelector(a.getAttribute('href'));
-            if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-          });
-        });
-    </script>
+<!-- NAV -->
 
-<div style="bottom: 10px; right: 10px; position: absolute;"><a href="https://signatureforemail.com/?utm_source=wth_free_link&utm_medium=external" target="_blank" style="font-size:11px; color: #d0d0d0;">Professional Email Signature</a></p>
+<nav>
+  <a href="#hero" class="nav-logo">fornece<span>.</span></a>
+  <div class="nav-tag">Plataforma B2B · Ferramentas</div>
+  <a href="#contato" class="nav-cta">Quero participar</a>
+</nav>
+
+<!-- HERO -->
+
+<section class="hero" id="hero">
+  <div class="hero-grid" id="hero-grid"></div>
+  <div class="hero-glow-a"></div>
+  <div class="hero-glow-b"></div>
+  <p class="hero-label">Fornece PRO — Para Fornecedores</p>
+  <h1 class="hero-title">Seu catálogo.<br><em>Organizado.</em><br>Vendendo.</h1>
+  <p class="hero-sub">A plataforma B2B que transforma PDFs e planilhas numa vitrine digital acessível a lojistas de todo SP — processada por IA em segundos.</p>
+  <div class="hero-cta">
+    <a href="#contato" class="btn-primary">Enviar meu catálogo</a>
+    <a href="#como-funciona" class="btn-link">Ver como funciona →</a>
+  </div>
+  <div class="hero-stats">
+    <div><div class="stat-num">15<b>s</b></div><div class="stat-label">Para processar um catálogo</div></div>
+    <div><div class="stat-num">100<b>%</b></div><div class="stat-label">Gratuito na fase MVP</div></div>
+    <div><div class="stat-num"><b>SP</b></div><div class="stat-label">Foco inicial: São Paulo</div></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span class="ticker-item">Ferramentas Elétricas</span>
+    <span class="ticker-item">Ferramentas Manuais</span>
+    <span class="ticker-item">Abrasivos e Discos</span>
+    <span class="ticker-item">EPI e Segurança</span>
+    <span class="ticker-item">Fixação e Parafusos</span>
+    <span class="ticker-item">Medição e Nível</span>
+    <span class="ticker-item">Corte e Perfuração</span>
+    <span class="ticker-item">Materiais Elétricos</span>
+    <span class="ticker-item">Ferramentas Elétricas</span>
+    <span class="ticker-item">Ferramentas Manuais</span>
+    <span class="ticker-item">Abrasivos e Discos</span>
+    <span class="ticker-item">EPI e Segurança</span>
+    <span class="ticker-item">Fixação e Parafusos</span>
+    <span class="ticker-item">Medição e Nível</span>
+    <span class="ticker-item">Corte e Perfuração</span>
+    <span class="ticker-item">Materiais Elétricos</span>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+
+<section class="problem reveal" id="problema">
+  <p class="section-label">O problema real</p>
+  <h2 class="section-title">O WhatsApp não é um sistema de vendas B2B</h2>
+  <div class="problem-layout">
+    <div>
+      <p class="col-head red">Como funciona hoje</p>
+      <ul class="check-list bad">
+        <li><span class="ico">✗</span>Catálogo em PDF enviado no WhatsApp some entre conversas</li>
+        <li><span class="ico">✗</span>Preço desatualizado circulando sem controle entre lojistas</li>
+        <li><span class="ico">✗</span>Lojista não te encontra porque você não aparece no Google</li>
+        <li><span class="ico">✗</span>Pedido feito por áudio gera erro de separação e retrabalho</li>
+        <li><span class="ico">✗</span>Você não sabe quem viu seu catálogo nem o que interessa</li>
+        <li><span class="ico">✗</span>Empresas vendem lista de contato dos seus clientes sem você saber</li>
+      </ul>
+    </div>
+    <div>
+      <p class="col-head green">Com o Fornece</p>
+      <ul class="check-list good">
+        <li><span class="ico">✓</span>Catálogo sempre atualizado, acessível 24h por qualquer lojista</li>
+        <li><span class="ico">✓</span>Você controla quais preços aparecem e para quem</li>
+        <li><span class="ico">✓</span>Lojistas de SP encontram você buscando por produto ou categoria</li>
+        <li><span class="ico">✓</span>Pedido organizado e rastreável, sem ruído de comunicação</li>
+        <li><span class="ico">✓</span>Você acompanha visitas, buscas e interesse por SKU em tempo real</li>
+        <li><span class="ico">✓</span>Seus dados, sua carteira, seu controle total</li>
+      </ul>
+    </div>
+  </div>
+  <div class="pain-block reveal">
+    <p><strong>O lojista quer velocidade acima de tudo.</strong> Quando precisa de um produto, quer saber preço, disponibilidade e prazo em menos de 2 minutos. Hoje ele liga para 3 fornecedores, espera resposta no WhatsApp, recebe PDF desatualizado — e compra de quem respondeu mais rápido, não de quem tem o melhor produto.</p>
+    <p><strong>Você perde venda por invisibilidade, não por preço.</strong> A maioria dos fornecedores não tem presença digital organizada. Lojistas novos nunca chegam até você porque simplesmente não te encontram. Não existe um buscador de fornecedores de ferramentas no Brasil com dados em tempo real — o Fornece vai ser esse lugar.</p>
+    <p><strong>Desenvolver um marketplace próprio custa caro e demora meses.</strong> Uma plataforma B2B própria exige desenvolvimento, manutenção e equipe técnica. O Fornece elimina essa barreira: você coloca seu catálogo no digital hoje, sem código, sem custo, sem contrato.</p>
+  </div>
+</section>
+
+<!-- HOW -->
+
+<section class="how reveal" id="como-funciona">
+  <p class="section-label">Como funciona</p>
+  <h2 class="section-title">Do catálogo à vitrine em minutos</h2>
+  <div class="steps">
+    <div class="step reveal d1">
+      <p class="step-num">01 —</p>
+      <span class="step-icon">📄</span>
+      <h3 class="step-title">Você envia seu catálogo</h3>
+      <p class="step-desc">PDF, Excel, imagem — qualquer formato que você já usa. Sem precisar reformatar nada antes.</p>
+    </div>
+    <div class="step reveal d2">
+      <p class="step-num">02 —</p>
+      <span class="step-icon">⚡</span>
+      <h3 class="step-title">Nossa IA processa tudo</h3>
+      <p class="step-desc">Extraímos nome, código, categoria, preço e especificações de cada produto automaticamente. Em segundos, não em dias.</p>
+    </div>
+    <div class="step reveal d3">
+      <p class="step-num">03 —</p>
+      <span class="step-icon">🏪</span>
+      <h3 class="step-title">Sua vitrine vai ao ar</h3>
+      <p class="step-desc">Lojistas cadastrados de SP encontram seus produtos, comparam e entram em contato direto. Você recebe o lead qualificado.</p>
+    </div>
+  </div>
+</section>
+
+<!-- AI PLATFORM MOCK -->
+
+<section class="platform reveal" id="plataforma">
+  <p class="section-label">A tecnologia</p>
+  <h2 class="section-title">IA que lê qualquer catálogo e extrai tudo automaticamente</h2>
+  <p style="color:var(--white-dim);font-size:14px;margin-top:14px;max-width:540px;font-weight:300;line-height:1.7">Você envia o arquivo. A IA identifica cada produto, extrai dados estruturados e monta a vitrine em tempo real — sem nenhuma intervenção manual.</p>
+  <div class="ai-mock">
+    <div class="ai-chrome">
+      <div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>
+      <div class="ai-url">app.fornece.co/pro/processar-catalogo</div>
+    </div>
+    <div class="ai-body">
+      <div class="ai-upload">
+        <div class="ai-panel-title">📁 &nbsp;Enviar catálogo</div>
+        <div class="ai-file-box">
+          <div class="ai-file-icon">📄</div>
+          <div class="ai-file-label">Arraste o arquivo aqui</div>
+          <div class="ai-file-sub">PDF · XLSX · CSV · JPG · PNG</div>
+        </div>
+        <div class="ai-file-item">
+          <span class="fi-icon">📋</span>
+          <div>
+            <div class="fi-name">catalogo_vonder_2025.pdf</div>
+            <div class="fi-meta">5 páginas · 2.1 MB</div>
+          </div>
+          <span class="fi-badge done">✓ PRONTO</span>
+        </div>
+        <div class="ai-file-item">
+          <span class="fi-icon">📊</span>
+          <div>
+            <div class="fi-name">tabela_precos_jan.xlsx</div>
+            <div class="fi-meta">3 abas · 847 linhas</div>
+          </div>
+          <span class="fi-badge proc">⟳ PROC.</span>
+        </div>
+        <div class="ai-progress">
+          <div class="ai-prog-label">
+            <span>PROCESSANDO IA</span>
+            <span style="color:var(--white-dim)">73%</span>
+          </div>
+          <div class="ai-prog-bar"><div class="ai-prog-fill"></div></div>
+          <div class="ai-log">
+            <div class="ai-log-line ok"><span class="ts">00:01</span><span>36 produtos extraídos do PDF</span></div>
+            <div class="ai-log-line ok"><span class="ts">00:03</span><span>Categorias identificadas: 4</span></div>
+            <div class="ai-log-line ok"><span class="ts">00:08</span><span>Preços e SKUs mapeados</span></div>
+            <div class="ai-log-line"><span class="ts">00:11</span><span style="color:var(--accent);opacity:.7">Normalizando planilha Excel...</span></div>
+            <div class="ai-log-line"><span class="ts">00:14</span><span>Aguardando validação...</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="ai-output">
+        <div class="ai-output-header">
+          <div class="ai-panel-title">✦ &nbsp;Produtos extraídos pela IA</div>
+          <span class="ai-badge-green">36 PRODUTOS</span>
+        </div>
+        <div class="ai-stats-mini">
+          <div class="ai-stat-mini"><div class="v">36</div><div class="l">SKUs</div></div>
+          <div class="ai-stat-mini"><div class="v"><b>4</b></div><div class="l">Categorias</div></div>
+          <div class="ai-stat-mini"><div class="v">98<b>%</b></div><div class="l">Confiança</div></div>
+        </div>
+        <div class="ai-product-row">
+          <span class="pr-icon">🔧</span>
+          <div><div class="pr-name">Furadeira de Impacto 750W</div><div class="pr-sku">SKU: VD-FI750 · Perfuração</div></div>
+          <div class="pr-price">R$&nbsp;187,00</div>
+          <span class="pr-conf">99%</span>
+        </div>
+        <div class="ai-product-row">
+          <span class="pr-icon">⚡</span>
+          <div><div class="pr-name">Serra Circular 7.1/4" 1400W</div><div class="pr-sku">SKU: VD-SC714 · Corte</div></div>
+          <div class="pr-price">R$&nbsp;312,50</div>
+          <span class="pr-conf">97%</span>
+        </div>
+        <div class="ai-product-row">
+          <span class="pr-icon">🔩</span>
+          <div><div class="pr-name">Esmerilhadeira Angular 4.1/2"</div><div class="pr-sku">SKU: VD-EA412 · Corte</div></div>
+          <div class="pr-price">R$&nbsp;142,90</div>
+          <span class="pr-conf">98%</span>
+        </div>
+        <div class="ai-product-row">
+          <span class="pr-icon">🪛</span>
+          <div><div class="pr-name">Parafusadeira 12V Bateria</div><div class="pr-sku">SKU: VD-PF12 · Fixação</div></div>
+          <div class="pr-price">R$&nbsp;224,00</div>
+          <span class="pr-conf">96%</span>
+        </div>
+        <div class="ai-product-row">
+          <span class="pr-icon">📏</span>
+          <div><div class="pr-name">Trena Digital a Laser 40m</div><div class="pr-sku">SKU: VD-TL40 · Medição</div></div>
+          <div class="pr-price">R$&nbsp;89,90</div>
+          <span class="pr-conf">99%</span>
+        </div>
+        <div style="text-align:center;padding:8px 0">
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--white-faint);letter-spacing:1px">+ 31 produtos processados · Tempo total: 15s</span>
+        </div>
+      </div>
+    </div>
+    <div class="ai-caption">— Demonstração do processamento de IA · Interface em desenvolvimento —</div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+
+<section class="benefits reveal">
+  <p class="section-label">Por que agora</p>
+  <h2 class="section-title">Feito para quem já vende, mas quer vender <em>mais</em></h2>
+  <div class="benefits-grid">
+    <div class="benefit-card reveal d1">
+      <div class="benefit-icon">🔒</div>
+      <h3 class="benefit-title">Seus preços são seus</h3>
+      <p class="benefit-desc">Controle total de visibilidade. Você define o que é público e o que fica exclusivo para lojistas cadastrados e verificados.</p>
+    </div>
+    <div class="benefit-card reveal d2">
+      <div class="benefit-icon">🎯</div>
+      <h3 class="benefit-title">Apenas lojistas B2B</h3>
+      <p class="benefit-desc">Acesso restrito a CNPJ ativo verificado. Nada de consumidor final ou concorrente vendo sua tabela de preços.</p>
+    </div>
+    <div class="benefit-card reveal d1">
+      <div class="benefit-icon">📊</div>
+      <h3 class="benefit-title">Você sabe o que interessa</h3>
+      <p class="benefit-desc">Veja quais produtos são mais buscados, quais lojistas acessam seu catálogo e onde estão as oportunidades reais.</p>
+    </div>
+    <div class="benefit-card reveal d2">
+      <div class="benefit-icon">🚀</div>
+      <h3 class="benefit-title">Zero barreiras de entrada</h3>
+      <p class="benefit-desc">Sem desenvolvimento, sem contrato, sem custo. Você envia o catálogo que já tem e a IA faz o resto em segundos.</p>
+    </div>
+  </div>
+  <div class="mvp-strip reveal">
+    <span class="mvp-icon">🔬</span>
+    <div class="mvp-text">
+      <strong>Fase MVP — Ferramentas primeiro, expansão depois.</strong> O Fornece começa focado no setor de ferramentas em São Paulo. Fornecedores com múltiplas categorias (elétrica, hidráulica, EPI, construção) já são bem-vindos. A expansão para outros setores está prevista nas próximas versões, com arquitetura construída desde o início para suportar isso.
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+
+<section class="cta-section reveal" id="contato">
+  <div class="cta-glow"></div>
+  <p class="section-label">Participe agora</p>
+  <h2 class="section-title">Selecionando os <em>10 primeiros</em> fornecedores</h2>
+  <p class="cta-sub">Vagas limitadas para a fase de testes. Sem custo, sem compromisso. Envie seu catálogo e veja o resultado da IA em tempo real.</p>
+  <div class="cta-buttons">
+    <a href="https://wa.me/5511964316557?text=Ola%2C%20tenho%20interesse%20em%20participar%20da%20fase%20inicial%20do%20Fornece%20como%20fornecedor." class="btn-whatsapp" target="_blank">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Falar no WhatsApp
+    </a>
+    <a href="mailto:alvaro.rasteli@gmail.com?subject=Interesse no Fornece - Quero cadastrar meu catalogo&body=Ola Alvaro, tenho interesse em participar da fase inicial do Fornece como fornecedor. Meu nome e empresa: . Aguardo retorno!" class="btn-email">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Enviar e-mail
+    </a>
+    <a href="https://www.instagram.com/fornecehub" class="btn-instagram" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      @fornecehub
+    </a>
+  </div>
+  <p class="cta-note">Resposta em até 24h · Sem spam · Sem compromisso</p>
+</section>
+
+<footer>
+  <div class="footer-logo">fornece<span>.</span></div>
+  <div class="footer-text">MVP · Ferramentas · São Paulo · 2025</div>
+</footer>
+
+<script>
+var grid = document.getElementById('hero-grid');
+window.addEventListener('scroll', function() {
+  if (grid) grid.style.transform = 'translateY(' + (window.scrollY * 0.28) + 'px)';
+}, { passive: true });
+
+var io = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+  });
+}, { threshold: 0.07 });
+document.querySelectorAll('.reveal').forEach(function(el) { io.observe(el); });
+
+document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+  a.addEventListener('click', function(e) {
+    var t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+</script>
+
 </body>
-
 </html>
