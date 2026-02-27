@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fornece - Editor de Catálogo (Preview)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --sidebar: #1a1d27;
+  --canvas-bg: #f5f5f7;
+  --primary: #00e5a0;
+  --primary-dim: rgba(0,229,160,0.15);
+  --accent: #00d4ff;
+  --text: #e4e4e7;
+  --text-muted: #71717a;
+  --text-dark: #27272a;
+  --border: #2a2d3a;
+  --border-light: #e4e4e7;
+  --selection: #00e5a0;
+  --grid-line: rgba(0,0,0,0.06);
+  --danger: #ef4444;
+  --sidebar-w: 260px;
+  --props-w: 280px;
+  --toolbar-h: 48px;
+  --font: 'Inter', -apple-system, sans-serif;
+  --radius: 8px;
+  --shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--font); background:var(--bg); color:var(--text); overflow:hidden; height:100vh; }
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+/* === LAYOUT === */
+.app { display:flex; height:100vh; }
+.sidebar { width:var(--sidebar-w); background:var(--sidebar); border-right:1px solid var(--border); flex-shrink:0; display:flex; flex-direction:column; overflow:hidden; }
+.sidebar-scroll { flex:1; overflow-y:auto; padding:14px; }
+.center { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.props { width:var(--props-w); background:var(--sidebar); border-left:1px solid var(--border); flex-shrink:0; overflow-y:auto; }
+
+/* === TOOLBAR === */
+.toolbar { display:flex; align-items:center; justify-content:space-between; height:var(--toolbar-h); padding:0 14px; background:var(--sidebar); border-bottom:1px solid var(--border); flex-shrink:0; }
+.tb-left { display:flex; align-items:center; gap:10px; }
+.tb-logo { font-size:15px; font-weight:700; color:var(--primary); }
+.tb-sep { width:1px; height:18px; background:var(--border); }
+.tb-title { font-size:12px; color:var(--text-muted); }
+.tb-center { display:flex; align-items:center; gap:3px; }
+.tb-btn { display:flex; align-items:center; justify-content:center; padding:5px 10px; border:1px solid var(--border); background:transparent; color:var(--text-muted); border-radius:6px; cursor:pointer; font-size:11px; font-family:var(--font); transition:all .15s; gap:4px; }
+.tb-btn:hover { background:var(--border); color:var(--text); }
+.tb-btn.active { background:var(--primary-dim); color:var(--primary); border-color:rgba(0,229,160,.3); }
+.tb-right { display:flex; gap:6px; }
+.tb-save { background:var(--primary); color:var(--bg); border-color:var(--primary); font-weight:600; }
+.tb-save:hover { opacity:.9; }
+
+/* === SIDEBAR === */
+.sb-section { margin-bottom:20px; }
+.sb-title { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:var(--text-muted); margin-bottom:8px; }
+.sb-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.sb-item { display:flex; flex-direction:column; align-items:center; gap:5px; padding:10px 6px; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:var(--radius); cursor:grab; transition:all .15s; user-select:none; }
+.sb-item:hover { background:rgba(255,255,255,.06); border-color:var(--primary); transform:translateY(-1px); }
+.sb-item:active { cursor:grabbing; opacity:.7; }
+.sb-item.dragging { opacity:.4; border-color:var(--primary); }
+.sb-item.full { grid-column:1/-1; }
+.sb-preview { width:100%; aspect-ratio:16/9; background:var(--border); border-radius:4px; display:grid; gap:2px; padding:4px; overflow:hidden; }
+.sb-preview.tall { aspect-ratio:3/1; display:flex; align-items:center; justify-content:center; }
+.sb-cell { border-radius:2px; }
+.sb-label { font-size:10px; color:var(--text-muted); font-weight:500; }
+
+/* === CANVAS === */
+.canvas-wrap { flex:1; overflow-y:auto; display:flex; justify-content:center; padding:20px; background:#1a1a2e; }
+.canvas { width:100%; max-width:1200px; min-height:700px; background:var(--canvas-bg); border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.15); position:relative; transition:max-width .3s; }
+.canvas.tablet { max-width:768px; }
+.canvas.mobile { max-width:390px; }
+.grid-overlay { position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); pointer-events:none; z-index:1; border-radius:12px; overflow:hidden; }
+.grid-overlay.hidden { display:none; }
+.grid-col { border-right:1px dashed var(--grid-line); }
+.grid-col:last-child { border-right:none; }
+.canvas-content { position:relative; z-index:2; }
+
+/* === CANVAS ELEMENTS === */
+.cel { position:relative; border:2px solid transparent; transition:border-color .15s, box-shadow .15s; cursor:pointer; }
+.cel:hover { border-color:rgba(0,229,160,.3); }
+.cel.selected { border-color:var(--selection) !important; box-shadow:0 0 0 1px var(--selection), 0 0 20px rgba(0,229,160,.15); }
+.cel-label { position:absolute; top:-22px; left:0; font-size:9px; font-weight:600; color:var(--selection); background:rgba(0,229,160,.15); padding:2px 7px; border-radius:4px 4px 0 0; text-transform:uppercase; letter-spacing:.5px; opacity:0; transition:opacity .15s; z-index:10; pointer-events:none; }
+.cel.selected .cel-label { opacity:1; }
+.cel-actions { position:absolute; top:6px; right:6px; display:flex; gap:3px; opacity:0; transition:opacity .15s; z-index:10; }
+.cel:hover .cel-actions, .cel.selected .cel-actions { opacity:1; }
+.cel-act { width:22px; height:22px; border:none; background:rgba(0,0,0,.6); color:white; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; }
+.cel-act:hover { background:rgba(0,0,0,.8); }
+.cel-act.del:hover { background:var(--danger); }
+.cel-drag { position:absolute; top:6px; left:50%; transform:translateX(-50%); width:36px; height:5px; background:rgba(0,0,0,.1); border-radius:3px; cursor:grab; opacity:0; transition:opacity .15s; z-index:10; }
+.cel:hover .cel-drag, .cel.selected .cel-drag { opacity:1; }
+.cel-resize { position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:50px; height:6px; cursor:row-resize; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .15s; z-index:10; }
+.cel:hover .cel-resize, .cel.selected .cel-resize { opacity:1; }
+.cel-resize-bar { width:36px; height:3px; background:var(--primary); border-radius:2px; }
+
+/* Drop indicator */
+.drop-ind { height:3px; background:var(--primary); border-radius:2px; margin:0 16px; animation:glow 1.5s ease infinite; }
+@keyframes glow { 0%,100%{box-shadow:0 0 8px var(--primary);opacity:.7} 50%{box-shadow:0 0 16px var(--primary);opacity:1} }
+
+/* Empty canvas */
+.canvas-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:500px; color:var(--text-muted); gap:10px; }
+.canvas-empty-icon { font-size:40px; opacity:.3; }
+
+/* === ELEMENT RENDERERS === */
+/* Header */
+.eh { padding:28px 20px; text-align:center; background:linear-gradient(135deg,#1a1a2e,#16213e); color:white; border-radius:12px 12px 0 0; min-height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
+.eh-upload { width:100%; max-width:500px; height:100px; border:2px dashed rgba(255,255,255,.2); border-radius:var(--radius); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; margin-bottom:12px; }
+.eh-upload-icon { font-size:20px; opacity:.5; }
+.eh-upload-text { font-size:11px; opacity:.5; }
+.eh-name { font-size:24px; font-weight:700; letter-spacing:-.5px; }
+.eh-tag { font-size:13px; opacity:.7; }
+.eh-social { display:flex; gap:10px; margin-top:6px; }
+.eh-soc { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.1); display:flex; align-items:center; justify-content:center; font-size:11px; color:rgba(255,255,255,.6); }
+
+/* Search */
+.es { padding:14px 20px; background:white; }
+.es-row { display:flex; gap:8px; }
+.es-input { flex:1; padding:10px 14px; border:1px solid var(--border-light); border-radius:var(--radius); font-size:13px; font-family:var(--font); background:#f9fafb; color:var(--text-dark); }
+.es-cat { padding:10px 14px; border:1px solid var(--border-light); border-radius:var(--radius); background:white; color:var(--text-dark); font-size:12px; font-family:var(--font); cursor:pointer; white-space:nowrap; }
+
+/* Products */
+.ep { padding:20px; background:white; }
+.ep-title { font-size:16px; font-weight:700; color:var(--text-dark); margin-bottom:14px; }
+.ep-grid { display:grid; gap:14px; }
+.ep-card { background:#f9fafb; border:1px solid #e4e4e7; border-radius:var(--radius); overflow:hidden; }
+.ep-card:hover { box-shadow:var(--shadow); }
+.ep-img { aspect-ratio:1; background:linear-gradient(135deg,#e4e4e7,#d4d4d8); display:flex; align-items:center; justify-content:center; color:#a1a1aa; font-size:20px; }
+.ep-info { padding:10px; }
+.ep-name { font-size:12px; font-weight:600; color:var(--text-dark); margin-bottom:3px; }
+.ep-sku { font-size:9px; color:#a1a1aa; margin-bottom:6px; }
+.ep-price { font-size:14px; font-weight:700; color:var(--text-dark); }
+
+/* Banner */
+.eb { padding:20px; background:white; }
+.eb-grid { display:grid; gap:14px; }
+.eb-item { aspect-ratio:16/7; border-radius:var(--radius); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; }
+.eb-label { font-size:16px; font-weight:700; }
+.eb-text { font-size:11px; opacity:.7; }
+
+/* Brands */
+.ebr { padding:20px; background:white; }
+.ebr-title { font-size:16px; font-weight:700; color:var(--text-dark); margin-bottom:14px; }
+.ebr-grid { display:grid; gap:14px; }
+.ebr-card { padding:20px; border:1px solid #e4e4e7; border-radius:var(--radius); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-height:100px; background:#fafafa; }
+.ebr-card:hover { border-color:var(--primary); }
+.ebr-logo { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#e4e4e7,#d4d4d8); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:#71717a; }
+.ebr-name { font-size:12px; font-weight:600; color:var(--text-dark); }
+
+/* === PROPERTY PANEL === */
+.pp-header { padding:14px; border-bottom:1px solid var(--border); }
+.pp-title { font-size:13px; font-weight:600; }
+.pp-sub { font-size:10px; color:var(--text-muted); margin-top:2px; }
+.pp-body { padding:14px; }
+.pp-sec { margin-bottom:18px; }
+.pp-sec-title { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:8px; }
+.pp-field { margin-bottom:10px; }
+.pp-label { display:block; font-size:10px; color:var(--text-muted); margin-bottom:4px; font-weight:500; }
+.pp-input { width:100%; padding:7px 9px; background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:6px; color:var(--text); font-size:11px; font-family:var(--font); }
+.pp-input:focus { outline:none; border-color:var(--primary); }
+.pp-color { padding:2px; height:32px; cursor:pointer; }
+.pp-cols { display:flex; gap:4px; }
+.pp-col-btn { flex:1; padding:7px; border:1px solid var(--border); background:transparent; color:var(--text-muted); border-radius:6px; cursor:pointer; font-size:11px; font-family:var(--font); font-weight:600; transition:all .15s; }
+.pp-col-btn:hover { border-color:var(--primary); color:var(--text); }
+.pp-col-btn.active { background:var(--primary-dim); border-color:var(--primary); color:var(--primary); }
+.pp-slider { display:flex; align-items:center; gap:6px; }
+.pp-range { flex:1; appearance:none; height:3px; background:var(--border); border-radius:2px; outline:none; }
+.pp-range::-webkit-slider-thumb { appearance:none; width:12px; height:12px; background:var(--primary); border-radius:50%; cursor:pointer; }
+.pp-val { font-size:10px; color:var(--text-muted); min-width:30px; text-align:right; }
+.pp-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; height:180px; color:var(--text-muted); text-align:center; gap:8px; }
+.pp-empty-icon { font-size:28px; opacity:.3; }
+.pp-empty-text { font-size:11px; }
+.pp-check { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--text-muted); cursor:pointer; }
+.pp-check input { margin:0; }
+
+/* Drag ghost */
+.drag-ghost { position:fixed; pointer-events:none; z-index:9999; padding:10px 18px; background:var(--primary); color:var(--bg); border-radius:var(--radius); font-weight:600; font-size:12px; font-family:var(--font); box-shadow:0 8px 24px rgba(0,229,160,.3); opacity:.9; }
+.drag-ghost.hidden { display:none; }
+
+/* Mobile adjustments */
+@media(max-width:900px) {
+  .props { display:none; }
+  .sidebar { width:200px; }
+}
+@media(max-width:600px) {
+  .sidebar { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-scroll" id="sidebar">
+      <!-- Layout -->
+      <div class="sb-section">
+        <div class="sb-title">Layout</div>
+        <div class="sb-grid">
+          <div class="sb-item full" draggable="true" data-type="header" data-cols="1">
+            <div class="sb-preview tall"><span style="font-size:16px;opacity:.4">▬</span></div>
+            <span class="sb-label">Header</span>
+          </div>
+          <div class="sb-item full" draggable="true" data-type="search" data-cols="1">
+            <div class="sb-preview tall"><span style="font-size:16px;opacity:.4">&#x2315;</span></div>
+            <span class="sb-label">Barra de Busca</span>
+          </div>
+        </div>
+      </div>
+      <!-- Produtos -->
+      <div class="sb-section">
+        <div class="sb-title">Produtos</div>
+        <div class="sb-grid" id="sb-products"></div>
+      </div>
+      <!-- Banners -->
+      <div class="sb-section">
+        <div class="sb-title">Banners</div>
+        <div class="sb-grid" id="sb-banners"></div>
+      </div>
+      <!-- Marcas -->
+      <div class="sb-section">
+        <div class="sb-title">Marcas</div>
+        <div class="sb-grid" id="sb-brands"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="center">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="tb-left">
+        <span class="tb-logo">Fornece</span>
+        <span class="tb-sep"></span>
+        <span class="tb-title">Editor de Catálogo</span>
+      </div>
+      <div class="tb-center">
+        <button class="tb-btn active" data-vp="desktop" onclick="setViewport('desktop')">&#x1F5A5; Desktop</button>
+        <button class="tb-btn" data-vp="tablet" onclick="setViewport('tablet')">&#x1F4F1; Tablet</button>
+        <button class="tb-btn" data-vp="mobile" onclick="setViewport('mobile')">&#x1F4F2; Mobile</button>
+        <button class="tb-btn" id="gridToggle" onclick="toggleGrid()">&#x229E; Grid</button>
+      </div>
+      <div class="tb-right">
+        <button class="tb-btn tb-save">Salvar Catálogo</button>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="canvas-wrap">
+      <div class="canvas" id="canvas">
+        <div class="grid-overlay" id="gridOverlay">
+          <div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div>
+        </div>
+        <div class="canvas-content" id="canvasContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROPERTY PANEL -->
+  <div class="props" id="propsPanel">
+    <div class="pp-header">
+      <div class="pp-title">Propriedades</div>
+      <div class="pp-sub">Selecione um elemento</div>
+    </div>
+    <div class="pp-body" id="propsBody">
+      <div class="pp-empty">
+        <div class="pp-empty-icon">&#x2699;</div>
+        <div class="pp-empty-text">Clique em um elemento<br>para editar propriedades</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Drag ghost -->
+<div class="drag-ghost hidden" id="dragGhost"></div>
+
+<script>
+// ==========================================
+// STATE
+// ==========================================
+const PRODUCTS = [
+  {name:'Furadeira Elétrica',sku:'SKU-001',price:'R$ 189,90'},
+  {name:'Serra Circular 7"',sku:'SKU-002',price:'R$ 349,90'},
+  {name:'Parafusadeira 12V',sku:'SKU-003',price:'R$ 279,90'},
+  {name:'Nível a Laser',sku:'SKU-004',price:'R$ 129,90'},
+  {name:'Jogo de Chaves',sku:'SKU-005',price:'R$ 89,90'},
+  {name:'Trena Digital 5m',sku:'SKU-006',price:'R$ 59,90'},
+  {name:'Alicate Universal',sku:'SKU-007',price:'R$ 49,90'},
+  {name:'Martelo Borracha',sku:'SKU-008',price:'R$ 39,90'},
+  {name:'Chave Inglesa',sku:'SKU-009',price:'R$ 69,90'},
+  {name:'Disco de Corte',sku:'SKU-010',price:'R$ 19,90'},
+  {name:'Broca Titânio',sku:'SKU-011',price:'R$ 44,90'},
+  {name:'Extensão 10m',sku:'SKU-012',price:'R$ 69,90'},
+];
+const BRANDS = ['Bosch','Makita','DeWalt','Tramontina','Stanley','Vonder','Black+Decker','Starrett'];
+
+let uid = 0;
+const genId = () => 'el-'+(++uid);
+
+let state = {
+  elements: [],
+  selectedId: null,
+  viewport: 'desktop',
+  showGrid: true,
+};
+
+function defaults(type, cols) {
+  const base = {
+    header: {brandName:'NOME DA MARCA',tagline:'Tagline da marca',bgColor:'#1a1a2e',textColor:'#ffffff',showSocial:true,showUpload:true},
+    search: {placeholder:'Buscar produtos...',showCategories:true,bgColor:'#ffffff'},
+    products: {columns:cols||4,title:'Produtos',showTitle:true,cardRadius:8,bgColor:'#ffffff',productCount:cols||4},
+    banner: {columns:cols||1,bgColor:'#667eea',bgColorEnd:'#764ba2',textColor:'#ffffff',bannerText:'Banner Promocional',bannerCount:cols||1},
+    brands: {columns:cols||4,title:'Marcas',showTitle:true,bgColor:'#ffffff',cardRadius:8,brandCount:cols||4},
+  };
+  return {...base[type]};
+}
+
+function addElement(type, cols, index) {
+  const el = {id:genId(), type, props:defaults(type, cols), height:null};
+  if(index!==undefined) state.elements.splice(index,0,el);
+  else state.elements.push(el);
+  state.selectedId = el.id;
+  render();
+}
+
+function removeElement(id) {
+  state.elements = state.elements.filter(e=>e.id!==id);
+  if(state.selectedId===id) state.selectedId=null;
+  render();
+}
+
+function duplicateElement(id) {
+  const i = state.elements.findIndex(e=>e.id===id);
+  if(i===-1) return;
+  const src = state.elements[i];
+  const dup = {id:genId(), type:src.type, props:{...src.props}, height:src.height};
+  state.elements.splice(i+1,0,dup);
+  state.selectedId = dup.id;
+  render();
+}
+
+function selectElement(id) {
+  state.selectedId = id;
+  render();
+}
+
+function updateProp(id, key, val) {
+  const el = state.elements.find(e=>e.id===id);
+  if(el) { el.props[key]=val; render(); }
+}
+
+// ==========================================
+// SIDEBAR SETUP
+// ==========================================
+function buildSidebar() {
+  ['products','banner','brands'].forEach(type => {
+    const container = document.getElementById('sb-'+type+'s') || document.getElementById('sb-'+type);
+    if(!container) return;
+    const colors = {products:'rgba(0,229,160,.3)',banner:'rgba(102,126,234,.3)',brands:'rgba(255,165,0,.3)'};
+    [1,2,3,4].forEach(cols => {
+      const item = document.createElement('div');
+      item.className = 'sb-item';
+      item.draggable = true;
+      item.dataset.type = type;
+      item.dataset.cols = cols;
+      let cells = '';
+      for(let i=0;i<cols;i++) cells += `<div class="sb-cell" style="background:${colors[type]}"></div>`;
+      item.innerHTML = `<div class="sb-preview" style="grid-template-columns:repeat(${cols},1fr)">${cells}</div><span class="sb-label">${cols}&times;1</span>`;
+      container.appendChild(item);
+    });
+  });
+}
+
+// ==========================================
+// RENDERING
+// ==========================================
+function renderHeader(p) {
+  return `<div class="eh" style="background:${p.bgColor};color:${p.textColor}">
+    ${p.showUpload?`<div class="eh-upload"><span class="eh-upload-icon">&uarr;</span><span class="eh-upload-text">Upload imagem de capa</span></div>`:''}
+    <div class="eh-name">${p.brandName}</div>
+    <div class="eh-tag">${p.tagline}</div>
+    ${p.showSocial?`<div class="eh-social"><div class="eh-soc">ig</div><div class="eh-soc">fb</div><div class="eh-soc">in</div><div class="eh-soc">ws</div></div>`:''}
+  </div>`;
+}
+
+function renderSearch(p) {
+  return `<div class="es" style="background:${p.bgColor}">
+    <div class="es-row">
+      <input class="es-input" placeholder="${p.placeholder}" readonly>
+      ${p.showCategories?`<button class="es-cat">Categorias &#x25BE;</button>`:''}
+    </div>
+  </div>`;
+}
+
+function renderProducts(p) {
+  const vp = state.viewport;
+  const cols = vp==='mobile'?Math.min(p.columns,2):vp==='tablet'?Math.min(p.columns,3):p.columns;
+  let cards = '';
+  for(let i=0;i<p.productCount;i++) {
+    const pr = PRODUCTS[i%PRODUCTS.length];
+    cards += `<div class="ep-card" style="border-radius:${p.cardRadius}px">
+      <div class="ep-img" style="border-radius:${p.cardRadius}px ${p.cardRadius}px 0 0">&#x2B21;</div>
+      <div class="ep-info"><div class="ep-name">${pr.name}</div><div class="ep-sku">${pr.sku}</div><div class="ep-price">${pr.price}</div></div>
+    </div>`;
+  }
+  return `<div class="ep" style="background:${p.bgColor}">
+    ${p.showTitle?`<div class="ep-title">${p.title}</div>`:''}
+    <div class="ep-grid" style="grid-template-columns:repeat(${cols},1fr)">${cards}</div>
+  </div>`;
+}
+
+function renderBanner(p) {
+  const vp = state.viewport;
+  const cols = vp==='mobile'?1:vp==='tablet'?Math.min(p.columns,2):p.columns;
+  let items = '';
+  for(let i=0;i<p.bannerCount;i++) {
+    items += `<div class="eb-item" style="background:linear-gradient(135deg,${p.bgColor},${p.bgColorEnd});color:${p.textColor}">
+      <span class="eb-label">${p.bannerText}</span><span class="eb-text">Clique para editar</span>
+    </div>`;
+  }
+  return `<div class="eb"><div class="eb-grid" style="grid-template-columns:repeat(${cols},1fr)">${items}</div></div>`;
+}
+
+function renderBrands(p) {
+  const vp = state.viewport;
+  const cols = vp==='mobile'?Math.min(p.columns,2):vp==='tablet'?Math.min(p.columns,3):p.columns;
+  let cards = '';
+  for(let i=0;i<p.brandCount;i++) {
+    const b = BRANDS[i%BRANDS.length];
+    cards += `<div class="ebr-card" style="border-radius:${p.cardRadius}px">
+      <div class="ebr-logo">${b.charAt(0)}</div><div class="ebr-name">${b}</div>
+    </div>`;
+  }
+  return `<div class="ebr" style="background:${p.bgColor}">
+    ${p.showTitle?`<div class="ebr-title">${p.title}</div>`:''}
+    <div class="ebr-grid" style="grid-template-columns:repeat(${cols},1fr)">${cards}</div>
+  </div>`;
+}
+
+const renderers = {header:renderHeader,search:renderSearch,products:renderProducts,banner:renderBanner,brands:renderBrands};
+const labels = {header:'Header',search:'Busca',products:'Produtos',banner:'Banner',brands:'Marcas'};
+
+function render() {
+  const cc = document.getElementById('canvasContent');
+  if(state.elements.length === 0) {
+    cc.innerHTML = `<div class="canvas-empty"><div class="canvas-empty-icon">&#x229E;</div><div>Arraste elementos aqui</div><div style="font-size:11px;opacity:.6">Use o painel lateral</div></div>`;
+  } else {
+    cc.innerHTML = state.elements.map(el => {
+      const sel = el.id===state.selectedId ? 'selected':'';
+      const style = el.height ? `min-height:${el.height}px`:'';
+      return `<div class="cel ${sel}" data-id="${el.id}" style="${style}" onclick="selectElement('${el.id}')">
+        <span class="cel-label">${labels[el.type]}</span>
+        <div class="cel-drag" draggable="true" data-drag-id="${el.id}"></div>
+        <div class="cel-actions">
+          <button class="cel-act" onclick="event.stopPropagation();duplicateElement('${el.id}')" title="Duplicar">&#x29C9;</button>
+          <button class="cel-act del" onclick="event.stopPropagation();removeElement('${el.id}')" title="Remover">&times;</button>
+        </div>
+        ${renderers[el.type](el.props)}
+        <div class="cel-resize" onmousedown="startResize(event,'${el.id}')"><div class="cel-resize-bar"></div></div>
+      </div>`;
+    }).join('');
+  }
+  renderProps();
+
+  // Canvas viewport class
+  const canvas = document.getElementById('canvas');
+  canvas.className = 'canvas' + (state.viewport!=='desktop'?' '+state.viewport:'');
+
+  // Grid
+  const go = document.getElementById('gridOverlay');
+  go.className = state.showGrid ? 'grid-overlay' : 'grid-overlay hidden';
+
+  // Grid toggle button
+  const gt = document.getElementById('gridToggle');
+  gt.className = state.showGrid ? 'tb-btn active' : 'tb-btn';
+
+  // Viewport buttons
+  document.querySelectorAll('[data-vp]').forEach(b => {
+    b.className = b.dataset.vp === state.viewport ? 'tb-btn active' : 'tb-btn';
+  });
+}
+
+// ==========================================
+// PROPERTY PANEL
+// ==========================================
+function renderProps() {
+  const body = document.getElementById('propsBody');
+  const header = document.querySelector('.pp-title');
+  const sub = document.querySelector('.pp-sub');
+  const el = state.elements.find(e=>e.id===state.selectedId);
+
+  if(!el) {
+    header.textContent = 'Propriedades';
+    sub.textContent = 'Selecione um elemento';
+    body.innerHTML = `<div class="pp-empty"><div class="pp-empty-icon">&#x2699;</div><div class="pp-empty-text">Clique em um elemento<br>para editar propriedades</div></div>`;
+    return;
+  }
+
+  header.textContent = labels[el.type];
+  sub.textContent = 'Editando propriedades';
+  const p = el.props;
+  const id = el.id;
+  let html = '';
+
+  // Appearance
+  html += `<div class="pp-sec"><div class="pp-sec-title">Aparência</div>`;
+  html += `<div class="pp-field"><label class="pp-label">Cor de Fundo</label><input type="color" class="pp-input pp-color" value="${p.bgColor||'#ffffff'}" onchange="updateProp('${id}','bgColor',this.value)"></div>`;
+  if(p.textColor!==undefined) html += `<div class="pp-field"><label class="pp-label">Cor do Texto</label><input type="color" class="pp-input pp-color" value="${p.textColor}" onchange="updateProp('${id}','textColor',this.value)"></div>`;
+  if(p.cardRadius!==undefined) html += `<div class="pp-field"><label class="pp-label">Arredondamento</label><div class="pp-slider"><input type="range" class="pp-range" min="0" max="24" value="${p.cardRadius}" oninput="updateProp('${id}','cardRadius',+this.value);this.nextElementSibling.textContent=this.value+'px'"><span class="pp-val">${p.cardRadius}px</span></div></div>`;
+  html += `</div>`;
+
+  // Columns
+  if(p.columns!==undefined) {
+    html += `<div class="pp-sec"><div class="pp-sec-title">Grid</div><div class="pp-field"><label class="pp-label">Colunas</label><div class="pp-cols">`;
+    for(let c=1;c<=4;c++) {
+      html += `<button class="pp-col-btn ${p.columns===c?'active':''}" onclick="updateProp('${id}','columns',${c});${el.type==='products'?`updateProp('${id}','productCount',${c});`:''}${el.type==='brands'?`updateProp('${id}','brandCount',${c});`:''}${el.type==='banner'?`updateProp('${id}','bannerCount',${c});`:''}">${c}</button>`;
+    }
+    html += `</div></div></div>`;
+  }
+
+  // Content - type specific
+  html += `<div class="pp-sec"><div class="pp-sec-title">Conteúdo</div>`;
+
+  if(el.type==='header') {
+    html += `<div class="pp-field"><label class="pp-label">Nome da Marca</label><input class="pp-input" value="${p.brandName}" oninput="updateProp('${id}','brandName',this.value)"></div>`;
+    html += `<div class="pp-field"><label class="pp-label">Tagline</label><input class="pp-input" value="${p.tagline}" oninput="updateProp('${id}','tagline',this.value)"></div>`;
+    html += `<div class="pp-field"><label class="pp-check"><input type="checkbox" ${p.showSocial?'checked':''} onchange="updateProp('${id}','showSocial',this.checked)"> Exibir redes sociais</label></div>`;
+    html += `<div class="pp-field"><label class="pp-check"><input type="checkbox" ${p.showUpload?'checked':''} onchange="updateProp('${id}','showUpload',this.checked)"> Área de upload</label></div>`;
+  }
+  if(el.type==='search') {
+    html += `<div class="pp-field"><label class="pp-label">Placeholder</label><input class="pp-input" value="${p.placeholder}" oninput="updateProp('${id}','placeholder',this.value)"></div>`;
+    html += `<div class="pp-field"><label class="pp-check"><input type="checkbox" ${p.showCategories?'checked':''} onchange="updateProp('${id}','showCategories',this.checked)"> Filtro de categorias</label></div>`;
+  }
+  if(el.type==='products') {
+    html += `<div class="pp-field"><label class="pp-label">Título</label><input class="pp-input" value="${p.title}" oninput="updateProp('${id}','title',this.value)"></div>`;
+    html += `<div class="pp-field"><label class="pp-check"><input type="checkbox" ${p.showTitle?'checked':''} onchange="updateProp('${id}','showTitle',this.checked)"> Exibir título</label></div>`;
+    html += `<div class="pp-field"><label class="pp-label">Qtd. Produtos</label><div class="pp-slider"><input type="range" class="pp-range" min="1" max="12" value="${p.productCount}" oninput="updateProp('${id}','productCount',+this.value);this.nextElementSibling.textContent=this.value"><span class="pp-val">${p.productCount}</span></div></div>`;
+  }
+  if(el.type==='banner') {
+    html += `<div class="pp-field"><label class="pp-label">Texto</label><input class="pp-input" value="${p.bannerText}" oninput="updateProp('${id}','bannerText',this.value)"></div>`;
+    html += `<div class="pp-field"><label class="pp-label">Cor Gradiente (Fim)</label><input type="color" class="pp-input pp-color" value="${p.bgColorEnd}" onchange="updateProp('${id}','bgColorEnd',this.value)"></div>`;
+    html += `<div class="pp-field"><label class="pp-label">Qtd. Banners</label><div class="pp-slider"><input type="range" class="pp-range" min="1" max="4" value="${p.bannerCount}" oninput="updateProp('${id}','bannerCount',+this.value);this.nextElementSibling.textContent=this.value"><span class="pp-val">${p.bannerCount}</span></div></div>`;
+  }
+  if(el.type==='brands') {
+    html += `<div class="pp-field"><label class="pp-label">Título</label><input class="pp-input" value="${p.title}" oninput="updateProp('${id}','title',this.value)"></div>`;
+    html += `<div class="pp-field"><label class="pp-check"><input type="checkbox" ${p.showTitle?'checked':''} onchange="updateProp('${id}','showTitle',this.checked)"> Exibir título</label></div>`;
+    html += `<div class="pp-field"><label class="pp-label">Qtd. Marcas</label><div class="pp-slider"><input type="range" class="pp-range" min="1" max="8" value="${p.brandCount}" oninput="updateProp('${id}','brandCount',+this.value);this.nextElementSibling.textContent=this.value"><span class="pp-val">${p.brandCount}</span></div></div>`;
+  }
+  html += `</div>`;
+
+  // Height
+  html += `<div class="pp-sec"><div class="pp-sec-title">Dimensões</div><div class="pp-field"><label class="pp-label">Altura</label><span class="pp-val" style="font-size:11px">${el.height?el.height+'px':'Auto'} — arraste a borda inferior</span></div></div>`;
+
+  body.innerHTML = html;
+}
+
+// ==========================================
+// VIEWPORT / GRID
+// ==========================================
+function setViewport(vp) { state.viewport=vp; render(); }
+function toggleGrid() { state.showGrid=!state.showGrid; render(); }
+
+// ==========================================
+// RESIZE
+// ==========================================
+function startResize(e, id) {
+  e.stopPropagation(); e.preventDefault();
+  const el = document.querySelector(`[data-id="${id}"]`);
+  const startY = e.clientY;
+  const startH = el.getBoundingClientRect().height;
+  function onMove(ev) {
+    const h = Math.max(60, startH + ev.clientY - startY);
+    const item = state.elements.find(x=>x.id===id);
+    if(item) { item.height = Math.round(h); el.style.minHeight = h+'px'; }
+  }
+  function onUp() {
+    window.removeEventListener('mousemove',onMove);
+    window.removeEventListener('mouseup',onUp);
+    render();
+  }
+  window.addEventListener('mousemove',onMove);
+  window.addEventListener('mouseup',onUp);
+}
+
+// ==========================================
+// DRAG & DROP
+// ==========================================
+let dragData = null;
+let dragOverId = null;
+
+document.addEventListener('dragstart', (e) => {
+  const sbItem = e.target.closest('.sb-item');
+  const celDrag = e.target.closest('.cel-drag');
+
+  if(sbItem) {
+    dragData = {source:'sidebar', type:sbItem.dataset.type, cols:+sbItem.dataset.cols};
+    sbItem.classList.add('dragging');
+    const ghost = document.getElementById('dragGhost');
+    ghost.textContent = `${labels[dragData.type]} ${dragData.cols}×1`;
+    ghost.classList.remove('hidden');
+    e.dataTransfer.setDragImage(ghost, 0, 0);
+  } else if(celDrag) {
+    const celEl = celDrag.closest('.cel');
+    dragData = {source:'canvas', id:celDrag.dataset.dragId};
+    celEl.style.opacity = '.5';
+    e.dataTransfer.setDragImage(celEl, 50, 20);
+  }
+});
+
+document.addEventListener('dragend', (e) => {
+  document.querySelectorAll('.sb-item.dragging').forEach(el=>el.classList.remove('dragging'));
+  document.querySelectorAll('.cel').forEach(el=>{el.style.opacity='';});
+  document.getElementById('dragGhost').classList.add('hidden');
+  document.querySelectorAll('.drop-ind').forEach(el=>el.remove());
+  dragData = null;
+  dragOverId = null;
+});
+
+document.getElementById('canvasContent').addEventListener('dragover', (e) => {
+  if(!dragData) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+
+  // Find closest element
+  document.querySelectorAll('.drop-ind').forEach(el=>el.remove());
+  const cels = [...document.querySelectorAll('.cel')];
+  if(cels.length === 0) return;
+
+  let insertBefore = null;
+  for(const cel of cels) {
+    const rect = cel.getBoundingClientRect();
+    if(e.clientY < rect.top + rect.height/2) { insertBefore = cel; break; }
+  }
+
+  const ind = document.createElement('div');
+  ind.className = 'drop-ind';
+  if(insertBefore) insertBefore.before(ind);
+  else document.getElementById('canvasContent').appendChild(ind);
+});
+
+document.getElementById('canvasContent').addEventListener('drop', (e) => {
+  if(!dragData) return;
+  e.preventDefault();
+
+  const cels = [...document.querySelectorAll('.cel')];
+  let insertIndex = state.elements.length;
+  for(let i=0;i<cels.length;i++) {
+    const rect = cels[i].getBoundingClientRect();
+    if(e.clientY < rect.top + rect.height/2) { insertIndex=i; break; }
+  }
+
+  if(dragData.source === 'sidebar') {
+    addElement(dragData.type, dragData.cols, insertIndex);
+  } else if(dragData.source === 'canvas') {
+    const fromIndex = state.elements.findIndex(el=>el.id===dragData.id);
+    if(fromIndex!==-1 && fromIndex!==insertIndex) {
+      const [moved] = state.elements.splice(fromIndex,1);
+      if(insertIndex > fromIndex) insertIndex--;
+      state.elements.splice(insertIndex,0,moved);
+      render();
+    }
+  }
+  document.querySelectorAll('.drop-ind').forEach(el=>el.remove());
+});
+
+// Click canvas to deselect
+document.getElementById('canvas').addEventListener('click', (e) => {
+  if(!e.target.closest('.cel')) { state.selectedId=null; render(); }
+});
+
+// ==========================================
+// INIT
+// ==========================================
+buildSidebar();
+addElement('header',1);
+addElement('search',1);
+addElement('products',4);
+addElement('banner',1);
+addElement('brands',4);
+state.selectedId = null;
+render();
+</script>
+</body>
+</html>
